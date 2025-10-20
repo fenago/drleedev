@@ -1,0 +1,63 @@
+{
+  "name": "drleedev",
+  "version": "0.1.0",
+  "description": "DrLee.dev - Universal Browser-Based IDE - 40+ languages, multiple databases, 100% client-side",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint src",
+    "format": "prettier --write src"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "^1.28.0",
+    "@electric-sql/pglite": "^0.1.5",
+    "@isomorphic-git/lightning-fs": "^4.6.2",
+    "@ruby/wasm-wasi": "^2.7.2",
+    "buffer": "^6.0.3",
+    "isomorphic-git": "^1.34.0",
+    "monaco-editor": "^0.45.0",
+    "php-wasm": "^0.0.8",
+    "pyodide": "^0.25.0",
+    "sql.js": "^1.10.3",
+    "wasmoon": "^1.16.0",
+    "webr": "^0.5.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.2",
+    "@vitest/coverage-v8": "^1.2.2",
+    "@vitest/ui": "^1.2.2",
+    "eslint": "^8.56.0",
+    "playwright": "^1.41.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.2"
+  },
+  "keywords": [
+    "ide",
+    "webassembly",
+    "wasm",
+    "code-editor",
+    "online-ide",
+    "browser-ide",
+    "monaco-editor",
+    "python",
+    "javascript",
+    "sql",
+    "database",
+    "education"
+  ],
+  "author": "DrLee.dev Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fenago/drleedev"
+  },
+  "homepage": "https://drlee.dev"
+}

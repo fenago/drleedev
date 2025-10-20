@@ -1,0 +1,17 @@
+{
+  "active_blockers": [],
+  "resolved_blockers": [],
+  "blocker_stats": {
+    "total_blockers": 0,
+    "active": 0,
+    "resolved": 0,
+    "avg_resolution_time_hours": 0
+  },
+  "severity_breakdown": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "notes": "No blockers currently. Project is in planning phase with clear roadmap defined."
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DrLee.dev - Universal Browser-Based IDE supporting 40+ programming languages and multiple databases, all running in your browser">
+  <meta name="keywords" content="online IDE, code editor, WebAssembly, Python, JavaScript, SQL, browser IDE, DrLee.dev">
+
+  <title>DrLee.dev - Code Anywhere, Execute Everywhere</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://jupyterlite.github.io;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://jupyterlite.github.io;
+    worker-src 'self' blob:;
+    font-src 'self' data: https://cdn.jsdelivr.net;
+    img-src 'self' data: blob:;
+    connect-src 'self' https://cdn.jsdelivr.net https://cors.isomorphic-git.org https://github.com https://api.github.com;
+    frame-src https://jupyterlite.github.io;
+  ">
+
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <link rel="stylesheet" href="/src/ui/styles/main.css">
+</head>
+<body>
+  <!-- Main Application Container -->
+  <div id="app">
+    <!-- Top Toolbar -->
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <h1 class="logo">DrLee.dev</h1>
+        <div id="language-selector-container"></div>
+      </div>
+
+      <div class="toolbar-right">
+        <button id="run-btn" class="btn btn-primary" title="Run code (Ctrl+Enter)">
+          <span class="btn-icon">▶</span>
+          Run
+        </button>
+        <button id="clear-btn" class="btn btn-secondary" title="Clear output">
+          <span class="btn-icon">🗑️</span>
+          Clear
+        </button>
+        <button id="save-btn" class="btn btn-secondary" title="Save (Ctrl+S)">
+          <span class="btn-icon">💾</span>
+          Save
+        </button>
+        <button id="download-btn" class="btn btn-secondary" title="Download current file">
+          <span class="btn-icon">⬇️</span>
+          Download
+        </button>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <button id="settings-btn" class="btn btn-secondary" title="Settings">
+          <span class="btn-icon">⚙️</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- File Explorer Sidebar -->
+      <div id="file-explorer-container"></div>
+
+      <!-- Editor Panel -->
+      <section class="editor-panel" id="editor-panel">
+        <div class="panel-header">
+          <span class="panel-title">Editor</span>
+          <span id="editor-status" class="editor-status"></span>
+        </div>
+        <!-- Tab Bar -->
+        <div id="tab-bar-container"></div>
+        <div id="editor-container" class="editor-container"></div>
+      </section>
+
+      <!-- Resizer -->
+      <div class="resizer" id="resizer"></div>
+
+      <!-- Output Panel -->
+      <aside class="output-panel" id="output-panel">
+        <div class="panel-header">
+          <span class="panel-title">Output</span>
+          <div class="output-controls">
+            <span id="execution-time" class="execution-time"></span>
+            <span id="memory-usage" class="memory-usage"></span>
+          </div>
+        </div>
+        <div id="output-container" class="output-container">
+          <div class="output-welcome">
+            👋 Welcome to DrLee.dev!<br>
+            Write code in the editor and click <strong>Run</strong> or press <strong>Ctrl+Enter</strong> to execute.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+      <span id="status-text" class="status-text">Ready</span>
+      <span id="cursor-position" class="cursor-position">Ln 1, Col 1</span>
+      <span id="current-language" class="current-language">JavaScript</span>
+    </footer>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+    <div id="loading-text" class="loading-text">Loading runtime...</div>
+  </div>
+
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 class="modal-title">Error</h3>
+      <p id="error-message" class="modal-message"></p>
+      <button id="error-close-btn" class="btn btn-primary">Close</button>
+    </div>
+  </div>
+
+  <!-- Main Application Script -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

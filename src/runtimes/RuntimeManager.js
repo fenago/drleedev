@@ -1,0 +1,265 @@
+import JavaScriptRuntime from './languages/JavaScriptRuntime.js';
+import PythonRuntime from './languages/PythonRuntime.js';
+import LuaRuntime from './languages/LuaRuntime.js';
+import RRuntime from './languages/RRuntime.js';
+import RubyRuntime from './languages/RubyRuntime.js';
+import SQLiteRuntime from './databases/SQLiteRuntime.js';
+import DuckDBRuntime from './databases/DuckDBRuntime.js';
+import JupyterLiteRuntime from './notebooks/JupyterLiteRuntime.js';
+
+/**
+ * RuntimeManager - Manages all programming language runtimes
+ *
+ * Handles lazy loading, execution, and lifecycle management of language runtimes.
+ */
+export default class RuntimeManager {
+  constructor() {
+    this.runtimes = new Map();
+    this.currentRuntime = null;
+    this.currentLanguage = 'javascript';
+
+    // Registry of available runtimes
+    this.registry = {
+      javascript: {
+        class: JavaScriptRuntime,
+        displayName: 'JavaScript',
+        tier: 'free',
+        lazy: false, // JavaScript is always loaded
+      },
+      typescript: {
+        class: JavaScriptRuntime, // TypeScript uses same runtime (transpiles to JS)
+        displayName: 'TypeScript',
+        tier: 'free',
+        lazy: false,
+      },
+      python: {
+        class: PythonRuntime,
+        displayName: 'Python',
+        tier: 'free', // Free for now, will be 'pro' when monetization is added
+        lazy: true, // Load on demand (6.5MB WASM)
+      },
+      lua: {
+        class: LuaRuntime,
+        displayName: 'Lua',
+        tier: 'free',
+        lazy: true, // Load on demand (200KB WASM)
+      },
+      r: {
+        class: RRuntime,
+        displayName: 'R',
+        tier: 'pro', // Pro tier for data science
+        lazy: true, // Load on demand (10MB WASM)
+      },
+      sqlite: {
+        class: SQLiteRuntime,
+        displayName: 'SQLite',
+        tier: 'free',
+        lazy: true, // Load on demand (2MB WASM)
+      },
+      duckdb: {
+        class: DuckDBRuntime,
+        displayName: 'DuckDB',
+        tier: 'pro', // Pro tier for analytics
+        lazy: true, // Load on demand (5MB WASM)
+      },
+      ruby: {
+        class: RubyRuntime,
+        displayName: 'Ruby',
+        tier: 'pro',
+        lazy: true, // Load on demand (15MB WASM)
+      },
+      jupyterlite: {
+        class: JupyterLiteRuntime,
+        displayName: 'JupyterLite',
+        tier: 'pro',
+        lazy: true, // Load on demand (iframe-based)
+      },
+    };
+  }
+
+  /**
+   * Initialize runtime manager
+   *
+   * @returns {Promise<void>}
+   */
+  async init() {
+    // Pre-load JavaScript runtime (always available)
+    const runtime = await this.loadRuntime('javascript');
+    this.currentRuntime = runtime;
+    this.currentLanguage = 'javascript';
+  }
+
+  /**
+   * Load a runtime if not already loaded
+   *
+   * @param {string} language - Language identifier
+   * @returns {Promise<BaseRuntime>}
+   */
+  async loadRuntime(language) {
+    // Check if runtime is already loaded
+    if (this.runtimes.has(language)) {
+      return this.runtimes.get(language);
+    }
+
+    // Check if language is supported
+    const config = this.registry[language];
+    if (!config) {
+      throw new Error(`Unsupported language: ${language}`);
+    }
+
+    // Create runtime instance
+    const runtime = new config.class();
+
+    // Set up output callbacks
+    runtime.onOutput((text, type) => {
+      this.handleOutput(text, type);
+    });
+
+    runtime.onError((text, type) => {
+      this.handleError(text, type);
+    });
+
+    // Load the runtime
+    if (!runtime.isLoaded()) {
+      await runtime.load();
+    }
+
+    // Store runtime
+    this.runtimes.set(language, runtime);
+
+    return runtime;
+  }
+
+  /**
+   * Switch to a different language runtime
+   *
+   * @param {string} language - Language to switch to
+   * @returns {Promise<void>}
+   */
+  async switchLanguage(language) {
+    if (this.currentLanguage === language) {
+      return; // Already on this language
+    }
+
+    // Load runtime if needed
+    const runtime = await this.loadRuntime(language);
+
+    this.currentRuntime = runtime;
+    this.currentLanguage = language;
+  }
+
+  /**
+   * Execute code in the current runtime
+   *
+   * @param {string} code - Code to execute
+   * @param {Object} options - Execution options
+   * @returns {Promise<{success: boolean, output: string, returnValue: any, error: Error|null, executionTime: number}>}
+   */
+  async executeCode(code, options = {}) {
+    if (!this.currentRuntime) {
+      throw new Error('No runtime loaded');
+    }
+
+    return await this.currentRuntime.execute(code, options);
+  }
+
+  /**
+   * Get current runtime
+   *
+   * @returns {BaseRuntime|null}
+   */
+  getCurrentRuntime() {
+    return this.currentRuntime;
+  }
+
+  /**
+   * Get current language
+   *
+   * @returns {string}
+   */
+  getCurrentLanguage() {
+    return this.currentLanguage;
+  }
+
+  /**
+   * Get list of available languages
+   *
+   * @returns {Array<{id: string, name: string, tier: string}>}
+   */
+  getAvailableLanguages() {
+    return Object.entries(this.registry).map(([id, config]) => ({
+      id,
+      name: config.displayName,
+      tier: config.tier,
+    }));
+  }
+
+  /**
+   * Check if language is available
+   *
+   * @param {string} language - Language to check
+   * @returns {boolean}
+   */
+  isLanguageAvailable(language) {
+    return this.registry.hasOwnProperty(language);
+  }
+
+  /**
+   * Handle output from runtime
+   *
+   * @private
+   * @param {string} text - Output text
+   * @param {string} type - Output type
+   */
+  handleOutput(text, type) {
+    // This will be connected to OutputPanel via callbacks
+    if (this.outputCallback) {
+      this.outputCallback(text, type);
+    }
+  }
+
+  /**
+   * Handle errors from runtime
+   *
+   * @private
+   * @param {string} text - Error text
+   * @param {string} type - Error type
+   */
+  handleError(text, type) {
+    // This will be connected to OutputPanel via callbacks
+    if (this.errorCallback) {
+      this.errorCallback(text, type);
+    }
+  }
+
+  /**
+   * Register output callback
+   *
+   * @param {Function} callback - Callback function(text, type)
+   */
+  onOutput(callback) {
+    this.outputCallback = callback;
+  }
+
+  /**
+   * Register error callback
+   *
+   * @param {Function} callback - Callback function(text, type)
+   */
+  onError(callback) {
+    this.errorCallback = callback;
+  }
+
+  /**
+   * Dispose all runtimes
+   *
+   * @returns {Promise<void>}
+   */
+  async dispose() {
+    for (const [, runtime] of this.runtimes) {
+      await runtime.dispose();
+    }
+    this.runtimes.clear();
+    this.currentRuntime = null;
+  }
+}

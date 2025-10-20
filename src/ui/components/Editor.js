@@ -291,6 +291,15 @@ console.log("Hello from JavaScript!");
 const message: string = "Hello from TypeScript!";
 console.log(message);
 `,
+      coffeescript: `# CoffeeScript - Press Ctrl+Enter to run
+
+message = "Hello from CoffeeScript!"
+console.log message
+
+# CoffeeScript features:
+square = (x) -> x * x
+console.log "5 squared is #{square 5}"
+`,
       python: `# ===================================================================
 # Welcome to DrLee IDE - Python 3.11 in Your Browser!
 # ===================================================================

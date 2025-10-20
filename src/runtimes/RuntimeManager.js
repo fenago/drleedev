@@ -1,4 +1,6 @@
 import JavaScriptRuntime from './languages/JavaScriptRuntime.js';
+import TypeScriptRuntime from './languages/TypeScriptRuntime.js';
+import CoffeeScriptRuntime from './languages/CoffeeScriptRuntime.js';
 import PythonRuntime from './languages/PythonRuntime.js';
 import LuaRuntime from './languages/LuaRuntime.js';
 import RRuntime from './languages/RRuntime.js';
@@ -34,10 +36,16 @@ export default class RuntimeManager {
         lazy: false, // JavaScript is always loaded
       },
       typescript: {
-        class: JavaScriptRuntime, // TypeScript uses same runtime (transpiles to JS)
+        class: TypeScriptRuntime, // TypeScript with compilation
         displayName: 'TypeScript',
         tier: 'free',
-        lazy: false,
+        lazy: true, // Load TypeScript compiler on demand (4MB)
+      },
+      coffeescript: {
+        class: CoffeeScriptRuntime,
+        displayName: 'CoffeeScript',
+        tier: 'free',
+        lazy: true, // Load CoffeeScript compiler on demand (200KB)
       },
       python: {
         class: PythonRuntime,

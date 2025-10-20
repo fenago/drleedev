@@ -69,26 +69,29 @@ export default class BasicRuntime extends BaseRuntime {
       // Capture output
       let outputBuffer = [];
 
-      // Create BASIC instance with output callback
-      const basic = new this.Basic({
-        tty: {
-          print: (text) => {
-            outputBuffer.push(text);
-            this.log(text, 'stdout');
-          },
-          cls: () => {
-            // Clear screen - for now just log it
-            outputBuffer.push('[Screen cleared]');
-          },
-          input: () => {
-            // Input not supported in non-interactive mode
-            return '';
-          },
+      // Create a custom console for capturing output
+      const customConsole = {
+        log: (...args) => {
+          const text = args.join(' ');
+          outputBuffer.push(text);
+          this.log(text, 'stdout');
         },
-      });
+      };
 
-      // Execute BASIC code
-      await basic.run(code);
+      // Save original console
+      const originalConsole = console.log;
+
+      // Replace console.log temporarily
+      console.log = customConsole.log;
+
+      try {
+        // Execute BASIC code using the Basic function
+        // wwwbasic.Basic() is a function, not a constructor
+        await this.Basic(code);
+      } finally {
+        // Restore original console
+        console.log = originalConsole;
+      }
 
       // Build output
       if (outputBuffer.length > 0) {

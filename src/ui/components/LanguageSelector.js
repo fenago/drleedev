@@ -344,7 +344,8 @@ export default class LanguageSelector {
     const registryData = [
       // === CURRENTLY IMPLEMENTED ===
       { id: 'javascript', name: 'JavaScript', icon: '🟨', available: true, category: 'language', tier: 'free', description: 'Native browser JavaScript execution' },
-      { id: 'typescript', name: 'TypeScript', icon: '🔷', available: true, category: 'language', tier: 'free', description: 'TypeScript with type checking' },
+      { id: 'typescript', name: 'TypeScript', icon: '🔷', available: true, category: 'language', tier: 'free', description: 'TypeScript with type checking and compilation' },
+      { id: 'coffeescript', name: 'CoffeeScript', icon: '☕', available: true, category: 'language', tier: 'free', description: 'CoffeeScript 2.x - elegant JavaScript' },
       { id: 'python', name: 'Python', icon: '🐍', available: true, category: 'language', tier: 'free', description: 'Python 3.11+ via Pyodide' },
       { id: 'lua', name: 'Lua', icon: '🌙', available: true, category: 'language', tier: 'free', description: 'Lua 5.4 via Wasmoon' },
       { id: 'r', name: 'R', icon: '📊', available: true, category: 'language', tier: 'pro', description: 'R 4.3 for statistics and data science' },

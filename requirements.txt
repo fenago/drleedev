@@ -1,0 +1,5 @@
+jupyterlite-core==0.6.4
+jupyterlite-pyodide-kernel
+jupyterlite-javascript-kernel
+jupyterlite-xeus-lua
+jupyterlite-xeus-sqlite

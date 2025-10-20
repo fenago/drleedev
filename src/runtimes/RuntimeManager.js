@@ -1,6 +1,8 @@
 import JavaScriptRuntime from './languages/JavaScriptRuntime.js';
 import TypeScriptRuntime from './languages/TypeScriptRuntime.js';
 import CoffeeScriptRuntime from './languages/CoffeeScriptRuntime.js';
+import MarkdownRuntime from './languages/MarkdownRuntime.js';
+import JSONRuntime from './languages/JSONRuntime.js';
 import PythonRuntime from './languages/PythonRuntime.js';
 import LuaRuntime from './languages/LuaRuntime.js';
 import RRuntime from './languages/RRuntime.js';
@@ -46,6 +48,18 @@ export default class RuntimeManager {
         displayName: 'CoffeeScript',
         tier: 'free',
         lazy: true, // Load CoffeeScript compiler on demand (200KB)
+      },
+      markdown: {
+        class: MarkdownRuntime,
+        displayName: 'Markdown',
+        tier: 'free',
+        lazy: false, // Markdown is always loaded (uses marked.js)
+      },
+      json: {
+        class: JSONRuntime,
+        displayName: 'JSON',
+        tier: 'free',
+        lazy: false, // JSON is native (no loading needed)
       },
       python: {
         class: PythonRuntime,

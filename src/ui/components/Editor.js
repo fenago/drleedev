@@ -300,6 +300,53 @@ console.log message
 square = (x) -> x * x
 console.log "5 squared is #{square 5}"
 `,
+      markdown: `# Markdown Example
+
+Press Ctrl+Enter to analyze this markdown, or click the **Preview** button (👁️) to see it rendered!
+
+## Features
+
+Markdown supports:
+- **Bold** and *italic* text
+- [Links](https://marked.js.org)
+- \`Code snippets\`
+- And much more!
+
+### Code Blocks
+
+\`\`\`javascript
+function hello() {
+  console.log("Hello from code block!");
+}
+\`\`\`
+
+### Lists
+
+1. First item
+2. Second item
+3. Third item
+
+> Blockquotes work too!
+
+---
+
+Try the Preview button to see this rendered beautifully!
+`,
+      json: `{
+  "message": "Hello from JSON!",
+  "version": "1.0.0",
+  "features": [
+    "Validation",
+    "Formatting",
+    "Analysis"
+  ],
+  "stats": {
+    "keys": 4,
+    "nested": true
+  },
+  "active": true
+}
+`,
       python: `# ===================================================================
 # Welcome to DrLee IDE - Python 3.11 in Your Browser!
 # ===================================================================

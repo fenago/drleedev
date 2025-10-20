@@ -259,25 +259,74 @@ export default class LanguageSelector {
    */
   categorizeLanguages() {
     const categories = {
-      'Available Now': [],
-      'Notebooks & IDE Integrations': [],
+      'Popular': [],
       'Databases': [],
-      'Programming Languages': [],
+      'Scripting Languages': [],
+      'Functional & Logic Languages': [],
+      'Educational Languages': [],
+      'Notebooks & IDE Integrations': [],
+      'Compiled Languages': [],
+      'JVM Languages': [],
+      '.NET Languages': [],
+      'Math & Science': [],
+      'Modern Languages': [],
+      'WASM-Native': [],
     };
 
+    // Define popular languages
+    const popularIds = ['javascript', 'typescript', 'python', 'lua', 'r', 'php', 'sql', 'sqlite', 'postgresql', 'duckdb'];
+
     for (const lang of this.languages) {
-      if (lang.available) {
-        // Put available items in "Available Now"
-        categories['Available Now'].push(lang);
-      } else if (lang.category === 'notebook') {
-        // Notebooks and IDE integrations
-        categories['Notebooks & IDE Integrations'].push(lang);
-      } else if (lang.category === 'database') {
-        // All databases (coming soon)
+      // Skip unavailable languages
+      if (!lang.available) continue;
+
+      // Popular category
+      if (popularIds.includes(lang.id)) {
+        categories['Popular'].push(lang);
+      }
+      // Databases
+      else if (lang.category === 'database') {
         categories['Databases'].push(lang);
-      } else {
-        // All other programming languages (coming soon)
-        categories['Programming Languages'].push(lang);
+      }
+      // Notebooks
+      else if (lang.category === 'notebook') {
+        categories['Notebooks & IDE Integrations'].push(lang);
+      }
+      // Scripting languages
+      else if (['ruby', 'perl', 'tcl'].includes(lang.id)) {
+        categories['Scripting Languages'].push(lang);
+      }
+      // Functional & Logic
+      else if (['scheme', 'commonlisp', 'racket', 'haskell', 'ocaml', 'elm', 'erlang', 'elixir', 'prolog', 'clojure'].includes(lang.id)) {
+        categories['Functional & Logic Languages'].push(lang);
+      }
+      // Educational
+      else if (['basic', 'pascal', 'scratch', 'blockly'].includes(lang.id)) {
+        categories['Educational Languages'].push(lang);
+      }
+      // Compiled
+      else if (['c', 'cpp', 'rust', 'go', 'zig', 'swift'].includes(lang.id)) {
+        categories['Compiled Languages'].push(lang);
+      }
+      // JVM
+      else if (['java', 'kotlin', 'scala'].includes(lang.id)) {
+        categories['JVM Languages'].push(lang);
+      }
+      // .NET
+      else if (['csharp', 'fsharp'].includes(lang.id)) {
+        categories['.NET Languages'].push(lang);
+      }
+      // Math & Science
+      else if (['julia', 'octave', 'fortran'].includes(lang.id)) {
+        categories['Math & Science'].push(lang);
+      }
+      // Modern
+      else if (['nim', 'd', 'dart', 'crystal'].includes(lang.id)) {
+        categories['Modern Languages'].push(lang);
+      }
+      // WASM-Native
+      else if (['assemblyscript', 'grain', 'wat'].includes(lang.id)) {
+        categories['WASM-Native'].push(lang);
       }
     }
 
@@ -304,9 +353,9 @@ export default class LanguageSelector {
       { id: 'duckdb', name: 'DuckDB', icon: '🦆', available: true, category: 'database', tier: 'pro', description: 'DuckDB analytics database' },
 
       // === COMING SOON - HIGH PRIORITY ===
-      { id: 'php', name: 'PHP', icon: '🐘', available: false, category: 'language', tier: 'pro', description: 'PHP 8.x for web development' },
-      { id: 'postgresql', name: 'PostgreSQL', icon: '🐘', available: false, category: 'database', tier: 'pro', description: 'PostgreSQL via PGLite' },
-      { id: 'scheme', name: 'Scheme', icon: '🎓', available: false, category: 'language', tier: 'pro', description: 'Scheme (Lisp dialect) via BiwaScheme' },
+      { id: 'php', name: 'PHP', icon: '🐘', available: true, category: 'language', tier: 'pro', description: 'PHP 8.2 for web development' },
+      { id: 'postgresql', name: 'PostgreSQL', icon: '🐘', available: true, category: 'database', tier: 'pro', description: 'PostgreSQL 16 via PGLite' },
+      { id: 'scheme', name: 'Scheme', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Scheme R7RS via BiwaScheme' },
       { id: 'perl', name: 'Perl', icon: '🐪', available: false, category: 'language', tier: 'pro', description: 'Perl 5 scripting' },
 
       // === COMPILED LANGUAGES ===
@@ -321,7 +370,7 @@ export default class LanguageSelector {
       { id: 'java', name: 'Java', icon: '☕', available: false, category: 'language', tier: 'enterprise', description: 'Java via CheerpJ/TeaVM' },
       { id: 'kotlin', name: 'Kotlin', icon: '🟣', available: false, category: 'language', tier: 'enterprise', description: 'Kotlin via Kotlin/JS' },
       { id: 'scala', name: 'Scala', icon: '🔴', available: false, category: 'language', tier: 'enterprise', description: 'Scala via Scala.js' },
-      { id: 'clojure', name: 'Clojure', icon: '🔵', available: false, category: 'language', tier: 'pro', description: 'Clojure via ClojureScript' },
+      { id: 'clojure', name: 'Clojure', icon: '🔵', available: true, category: 'language', tier: 'pro', description: 'Clojure via ClojureScript REPL' },
 
       // === .NET LANGUAGES ===
       { id: 'csharp', name: 'C#', icon: '💚', available: false, category: 'language', tier: 'enterprise', description: 'C# via Blazor WASM' },
@@ -335,11 +384,11 @@ export default class LanguageSelector {
       { id: 'elixir', name: 'Elixir', icon: '💧', available: false, category: 'language', tier: 'pro', description: 'Elixir (experimental)' },
 
       // === LISP FAMILY ===
-      { id: 'commonlisp', name: 'Common Lisp', icon: '🎓', available: false, category: 'language', tier: 'pro', description: 'Common Lisp via JSCL' },
+      { id: 'commonlisp', name: 'Common Lisp', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Common Lisp ANSI CL via JSCL' },
       { id: 'racket', name: 'Racket', icon: '🎾', available: false, category: 'language', tier: 'pro', description: 'Racket Scheme' },
 
       // === EDUCATION/SCRIPTING ===
-      { id: 'basic', name: 'BASIC', icon: '📺', available: false, category: 'language', tier: 'free', description: 'BASIC programming' },
+      { id: 'basic', name: 'BASIC', icon: '📺', available: true, category: 'language', tier: 'free', description: 'Classic BASIC programming' },
       { id: 'pascal', name: 'Pascal', icon: '🎯', available: false, category: 'language', tier: 'pro', description: 'Pascal via pas2js' },
       { id: 'tcl', name: 'Tcl', icon: '🔧', available: false, category: 'language', tier: 'pro', description: 'Tool Command Language' },
 
@@ -347,7 +396,7 @@ export default class LanguageSelector {
       { id: 'julia', name: 'Julia', icon: '🔬', available: false, category: 'language', tier: 'enterprise', description: 'Julia scientific computing (experimental)' },
       { id: 'octave', name: 'Octave', icon: '🔢', available: false, category: 'language', tier: 'pro', description: 'GNU Octave (MATLAB alternative)' },
       { id: 'fortran', name: 'Fortran', icon: '🧮', available: false, category: 'language', tier: 'enterprise', description: 'Fortran via LLVM WASM' },
-      { id: 'prolog', name: 'Prolog', icon: '🤔', available: false, category: 'language', tier: 'pro', description: 'Prolog logic programming' },
+      { id: 'prolog', name: 'Prolog', icon: '🤔', available: true, category: 'language', tier: 'pro', description: 'Prolog logic programming via Tau Prolog' },
 
       // === MODERN/NICHE LANGUAGES ===
       { id: 'nim', name: 'Nim', icon: '👑', available: false, category: 'language', tier: 'pro', description: 'Nim systems programming' },

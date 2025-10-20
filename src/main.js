@@ -6,6 +6,7 @@
 
 import Editor from './ui/components/Editor.js';
 import OutputPanel from './ui/components/OutputPanel.js';
+import PreviewPanel from './ui/components/PreviewPanel.js';
 import RuntimeManager from './runtimes/RuntimeManager.js';
 import FileManager from './storage/FileManager.js';
 import GitManager from './storage/GitManager.js';
@@ -23,6 +24,7 @@ class DrLeeIDE {
   constructor() {
     this.editor = null;
     this.outputPanel = null;
+    this.previewPanel = null;
     this.runtimeManager = null;
     this.fileManager = null;
     this.gitManager = null;
@@ -42,6 +44,7 @@ class DrLeeIDE {
     this.autoSaveTimer = null;
     this.autoSaveDelay = 3000; // Auto-save after 3 seconds of inactivity
     this.isAutoSaving = false;
+    this.isPreviewMode = false; // Track if preview is active
   }
 
   /**
@@ -59,6 +62,7 @@ class DrLeeIDE {
       this.initSettingsPanel(); // Initialize settings panel
       await this.initEditor();
       this.initOutputPanel();
+      this.initPreviewPanel();
       await this.initRuntimeManager();
       await this.initFileManager();
       this.initTabBar();
@@ -123,6 +127,20 @@ class DrLeeIDE {
 
     this.outputPanel = new OutputPanel(container);
     this.outputPanel.showWelcome();
+  }
+
+  /**
+   * Initialize Preview Panel
+   */
+  initPreviewPanel() {
+    const container = document.getElementById('preview-container');
+    if (!container) {
+      throw new Error('Preview container not found');
+    }
+
+    this.previewPanel = new PreviewPanel(container);
+    this.previewPanel.init();
+    console.log('Preview panel initialized');
   }
 
   /**
@@ -360,6 +378,12 @@ class DrLeeIDE {
     const settingsBtn = document.getElementById('settings-btn');
     if (settingsBtn) {
       settingsBtn.addEventListener('click', () => this.handleSettings());
+    }
+
+    // Preview toggle button
+    const previewToggleBtn = document.getElementById('preview-toggle');
+    if (previewToggleBtn) {
+      previewToggleBtn.addEventListener('click', () => this.handlePreviewToggle());
     }
 
     // Panel resizer
@@ -675,6 +699,64 @@ class DrLeeIDE {
   }
 
   /**
+   * Handle preview toggle
+   */
+  handlePreviewToggle() {
+    const editorContainer = document.getElementById('editor-container');
+    const previewContainer = document.getElementById('preview-container');
+    const previewToggleBtn = document.getElementById('preview-toggle');
+
+    if (!editorContainer || !previewContainer || !previewToggleBtn) return;
+
+    if (this.isPreviewMode) {
+      // Switch to editor mode
+      editorContainer.style.display = 'block';
+      previewContainer.style.display = 'none';
+      this.isPreviewMode = false;
+      previewToggleBtn.classList.remove('active');
+      previewToggleBtn.innerHTML = '<span class="btn-icon">👁️</span> Preview';
+    } else {
+      // Switch to preview mode
+      const content = this.editor.getValue();
+      const fileName = this.currentFile?.name || '';
+      const previewMode = PreviewPanel.getPreviewMode(fileName);
+
+      if (previewMode === 'markdown') {
+        this.previewPanel.showMarkdown(content);
+      } else if (previewMode === 'html') {
+        this.previewPanel.showHTML(content);
+      }
+
+      editorContainer.style.display = 'none';
+      previewContainer.style.display = 'block';
+      this.isPreviewMode = true;
+      previewToggleBtn.classList.add('active');
+      previewToggleBtn.innerHTML = '<span class="btn-icon">✏️</span> Edit';
+    }
+  }
+
+  /**
+   * Update preview button visibility based on current file
+   */
+  updatePreviewVisibility() {
+    const previewToggleBtn = document.getElementById('preview-toggle');
+    if (!previewToggleBtn) return;
+
+    const fileName = this.currentFile?.name || '';
+    const canPreview = PreviewPanel.canPreview(fileName);
+
+    if (canPreview) {
+      previewToggleBtn.style.display = 'block';
+    } else {
+      previewToggleBtn.style.display = 'none';
+      // If preview button is hidden, make sure we're in editor mode
+      if (this.isPreviewMode) {
+        this.handlePreviewToggle(); // Switch back to editor
+      }
+    }
+  }
+
+  /**
    * Handle opening file from File Explorer
    */
   handleFileOpen(file) {
@@ -713,6 +795,9 @@ class DrLeeIDE {
 
     this.hasUnsavedChanges = false;
     this.setStatus(`Opened ${file.name}`);
+
+    // Update preview button visibility
+    this.updatePreviewVisibility();
   }
 
   /**
@@ -963,6 +1048,9 @@ class DrLeeIDE {
     }
 
     this.hasUnsavedChanges = file.unsaved || false;
+
+    // Update preview button visibility
+    this.updatePreviewVisibility();
   }
 
   /**

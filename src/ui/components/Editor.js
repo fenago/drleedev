@@ -282,101 +282,14 @@ export default class Editor {
    */
   getDefaultCode(language) {
     const defaults = {
-      javascript: `// ===================================================================
-// Welcome to DrLee IDE - JavaScript in Your Browser!
-// ===================================================================
-//
-// Press Ctrl+Enter (or Cmd+Enter) to run
-//
-// CAPABILITIES:
-// ===================================================================
-// JavaScript runs natively in the browser with full ES2023+ support.
-//
-// ✓ Modern JavaScript (ES2023+) - async/await, classes, modules
-// ✓ Web APIs - fetch, localStorage, IndexedDB, WebWorkers
-// ✓ DOM manipulation - document, window, events
-// ✓ JSON processing - parse, stringify
-// ✓ Regular expressions, Math, Date, Set, Map
-// ✓ Promises and async programming
-//
-// LIMITATIONS:
-// ✗ No Node.js APIs (fs, path, http server, etc.)
-// ✗ No npm package imports (use CDN or bundle)
-// ✗ No file system access (use IndexedDB)
-//
-// DOCUMENTATION:
-// • MDN Web Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript
-// • Browser APIs: https://developer.mozilla.org/en-US/docs/Web/API
-//
-// ===================================================================
-// QUICK START EXAMPLE:
-// ===================================================================
+      javascript: `// JavaScript - Press Ctrl+Enter to run
 
-console.log("🚀 JavaScript running in your browser!");
-console.log("=" .repeat(50));
-
-// Basic JavaScript
-const numbers = [1, 2, 3, 4, 5];
-const sum = numbers.reduce((a, b) => a + b, 0);
-console.log(\`Sum of [\${numbers}] = \${sum}\`);
-
-// Async example
-const fetchExample = async () => {
-  console.log("✨ Ready to code! Press Ctrl+Enter to run.");
-};
-
-fetchExample();
+console.log("Hello from JavaScript!");
 `,
-      typescript: `// ===================================================================
-// Welcome to DrLee IDE - TypeScript in Your Browser!
-// ===================================================================
-//
-// Press Ctrl+Enter (or Cmd+Enter) to run
-// First run compiles TypeScript (~5 seconds)
-//
-// CAPABILITIES:
-// ===================================================================
-// TypeScript is compiled to JavaScript in the browser using TypeScript.
-//
-// ✓ Full TypeScript 5.0+ support - types, interfaces, generics
-// ✓ Type checking and inference
-// ✓ Modern ES2023+ features
-// ✓ All JavaScript capabilities (see JavaScript docs)
-// ✓ Decorators, enums, namespaces
-// ✓ Async/await, promises
-//
-// LIMITATIONS:
-// ✗ No npm package imports (use CDN)
-// ✗ No Node.js APIs
-// ✗ Limited type error reporting in editor
-//
-// DOCUMENTATION:
-// • TypeScript Docs: https://www.typescriptlang.org/docs/
-// • TypeScript Playground: https://www.typescriptlang.org/play
-// • Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
-//
-// ===================================================================
-// QUICK START EXAMPLE:
-// ===================================================================
+      typescript: `// TypeScript - Press Ctrl+Enter to run
 
-const greeting: string = "🚀 TypeScript running in your browser!";
-console.log(greeting);
-console.log("=".repeat(50));
-
-// Type-safe function
-const add = (a: number, b: number): number => a + b;
-console.log(\`2 + 3 = \${add(2, 3)}\`);
-
-// Interface example
-interface Person {
-  name: string;
-  age: number;
-}
-
-const user: Person = { name: "Alice", age: 30 };
-console.log(\`User: \${user.name}, Age: \${user.age}\`);
-
-console.log("✨ Ready to code! Press Ctrl+Enter to run.");
+const message: string = "Hello from TypeScript!";
+console.log(message);
 `,
       python: `# ===================================================================
 # Welcome to DrLee IDE - Python 3.11 in Your Browser!
@@ -472,60 +385,51 @@ except ImportError:
 
 print("✨ Ready to code! Press Ctrl+Enter to run.")
 `,
-      lua: `-- ===================================================================
--- Welcome to DrLee IDE - Lua 5.4 in Your Browser!
--- ===================================================================
---
--- Press Ctrl+Enter (or Cmd+Enter) to run
--- First run loads Lua WASM (~500KB, 2-3 seconds)
---
--- CAPABILITIES:
--- ===================================================================
--- Lua 5.4 runs in WebAssembly via Wasmoon.
---
--- ✓ Full Lua 5.4 standard library
--- ✓ Tables, metatables, coroutines
--- ✓ Pattern matching (string library)
--- ✓ Math, string, table libraries
--- ✓ Closures and first-class functions
--- ✓ Iterator protocol
---
--- LIMITATIONS:
--- ✗ No file I/O (os.execute, io.* limited)
--- ✗ No C modules or FFI
--- ✗ No LuaRocks packages
--- ✗ No os.exit or system calls
---
--- DOCUMENTATION:
--- • Lua 5.4 Reference: https://www.lua.org/manual/5.4/
--- • Lua Tutorial: https://www.lua.org/pil/
--- • Wasmoon (Lua WASM): https://github.com/ceifa/wasmoon
---
--- ===================================================================
--- QUICK START EXAMPLE:
--- ===================================================================
+      lua: `-- Lua - Press Ctrl+Enter to run
 
-print("🌙 Lua 5.4 running in your browser!")
-print(string.rep("=", 50))
+print("Hello from Lua!")
+`,
+      ruby: `# Ruby - Press Ctrl+Enter to run
 
--- Basic Lua
-print("Lua version:", _VERSION)
+puts "Hello from Ruby!"
+`,
+      php: `<?php
+// PHP - Press Ctrl+Enter to run
 
-local numbers = {1, 2, 3, 4, 5}
-local sum = 0
-for _, n in ipairs(numbers) do
-  sum = sum + n
-end
-print(string.format("Sum of numbers = %d", sum))
+echo "Hello from PHP!\\n";
+`,
+      r: `# R - Press Ctrl+Enter to run
 
--- Table example
-local person = {
-  name = "Alice",
-  age = 30
-}
-print(string.format("Person: %s, Age: %d", person.name, person.age))
+print("Hello from R!")
+`,
+      postgresql: `-- PostgreSQL - Press Ctrl+Enter to run
 
-print("✨ Ready to code! Press Ctrl+Enter to run.")
+SELECT 'Hello from PostgreSQL!' as message;
+`,
+      duckdb: `-- DuckDB - Press Ctrl+Enter to run
+
+SELECT 'Hello from DuckDB!' as message;
+`,
+      scheme: `; Scheme - Press Ctrl+Enter to run
+
+(display "Hello from Scheme!")
+(newline)
+`,
+      commonlisp: `; Common Lisp - Press Ctrl+Enter to run
+
+(format t "Hello from Common Lisp!~%")
+`,
+      clojure: `; Clojure - Press Ctrl+Enter to run
+
+(println "Hello from Clojure!")
+`,
+      prolog: `% Prolog - Press Ctrl+Enter to run
+
+:- write('Hello from Prolog!'), nl.
+`,
+      basic: `10 REM BASIC - Press Ctrl+Enter to run
+20 PRINT "Hello from BASIC!"
+30 END
 `,
       sqlite: `-- ===================================================================
 -- Welcome to DrLee IDE - SQLite 3 in Your Browser!

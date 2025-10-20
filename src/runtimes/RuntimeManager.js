@@ -3,8 +3,15 @@ import PythonRuntime from './languages/PythonRuntime.js';
 import LuaRuntime from './languages/LuaRuntime.js';
 import RRuntime from './languages/RRuntime.js';
 import RubyRuntime from './languages/RubyRuntime.js';
+import PHPRuntime from './languages/PHPRuntime.js';
+import SchemeRuntime from './languages/SchemeRuntime.js';
+import CommonLispRuntime from './languages/CommonLispRuntime.js';
+import BasicRuntime from './languages/BasicRuntime.js';
+import PrologRuntime from './languages/PrologRuntime.js';
+import ClojureRuntime from './languages/ClojureRuntime.js';
 import SQLiteRuntime from './databases/SQLiteRuntime.js';
 import DuckDBRuntime from './databases/DuckDBRuntime.js';
+import PostgreSQLRuntime from './databases/PostgreSQLRuntime.js';
 import JupyterLiteRuntime from './notebooks/JupyterLiteRuntime.js';
 
 /**
@@ -73,6 +80,48 @@ export default class RuntimeManager {
         displayName: 'JupyterLite',
         tier: 'pro',
         lazy: true, // Load on demand (iframe-based)
+      },
+      php: {
+        class: PHPRuntime,
+        displayName: 'PHP',
+        tier: 'pro',
+        lazy: true, // Load on demand (5MB WASM)
+      },
+      postgresql: {
+        class: PostgreSQLRuntime,
+        displayName: 'PostgreSQL',
+        tier: 'pro',
+        lazy: true, // Load on demand (3MB WASM)
+      },
+      scheme: {
+        class: SchemeRuntime,
+        displayName: 'Scheme',
+        tier: 'pro',
+        lazy: true, // Load on demand (500KB)
+      },
+      commonlisp: {
+        class: CommonLispRuntime,
+        displayName: 'Common Lisp',
+        tier: 'pro',
+        lazy: true, // Load on demand (1MB)
+      },
+      basic: {
+        class: BasicRuntime,
+        displayName: 'BASIC',
+        tier: 'free',
+        lazy: true, // Load on demand (200KB)
+      },
+      prolog: {
+        class: PrologRuntime,
+        displayName: 'Prolog',
+        tier: 'pro',
+        lazy: true, // Load on demand (400KB)
+      },
+      clojure: {
+        class: ClojureRuntime,
+        displayName: 'Clojure',
+        tier: 'pro',
+        lazy: true, // Load on demand (100KB)
       },
     };
   }

@@ -39,6 +39,10 @@
       </div>
 
       <div class="toolbar-right">
+        <button id="preview-toggle" class="preview-toggle" title="Toggle preview (Markdown/HTML)" style="display: none;">
+          <span class="btn-icon">👁️</span>
+          Preview
+        </button>
         <button id="run-btn" class="btn btn-primary" title="Run code (Ctrl+Enter)">
           <span class="btn-icon">▶</span>
           Run
@@ -78,6 +82,7 @@
         <!-- Tab Bar -->
         <div id="tab-bar-container"></div>
         <div id="editor-container" class="editor-container"></div>
+        <div id="preview-container" style="display: none; width: 100%; height: 100%;"></div>
       </section>
 
       <!-- Resizer -->

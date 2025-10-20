@@ -27,6 +27,7 @@ export default class FileExplorer {
     this.filteredFiles = [];
     this.searchQuery = '';
     this.contextMenu = null;
+    this.expandedFolders = new Set(); // Track expanded folders
   }
 
   /**
@@ -46,6 +47,8 @@ export default class FileExplorer {
         <div class="file-explorer-header">
           <h3 class="file-explorer-title">Files</h3>
           <div class="file-explorer-actions">
+            <button class="btn-icon" id="download-all-files" title="Download all files as ZIP">📦</button>
+            <button class="btn-icon" id="clear-all-files" title="Delete all files">🗑️</button>
             <button class="btn-icon" id="upload-file" title="Upload file">📤</button>
             <button class="btn-icon" id="refresh-files" title="Refresh">🔄</button>
             <button class="btn-icon" id="toggle-explorer" title="Collapse">◀</button>
@@ -162,6 +165,18 @@ export default class FileExplorer {
       fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
     }
 
+    // Download all files button
+    const downloadAllBtn = document.getElementById('download-all-files');
+    if (downloadAllBtn) {
+      downloadAllBtn.addEventListener('click', () => this.downloadAllFiles());
+    }
+
+    // Clear all files button
+    const clearAllBtn = document.getElementById('clear-all-files');
+    if (clearAllBtn) {
+      clearAllBtn.addEventListener('click', () => this.clearAllFiles());
+    }
+
     // Refresh button
     const refreshBtn = document.getElementById('refresh-files');
     if (refreshBtn) {
@@ -229,6 +244,108 @@ export default class FileExplorer {
   }
 
   /**
+   * Build file tree structure from flat file list
+   */
+  buildFileTree(files) {
+    const tree = {
+      name: 'root',
+      type: 'folder',
+      children: {},
+    };
+
+    for (const file of files) {
+      const parts = file.name.split('/');
+      let current = tree;
+
+      // Navigate/create folder structure
+      for (let i = 0; i < parts.length - 1; i++) {
+        const folderName = parts[i];
+        if (!current.children[folderName]) {
+          current.children[folderName] = {
+            name: folderName,
+            type: 'folder',
+            children: {},
+          };
+        }
+        current = current.children[folderName];
+      }
+
+      // Add file at final location
+      const fileName = parts[parts.length - 1];
+      current.children[fileName] = {
+        name: fileName,
+        type: 'file',
+        file: file,
+      };
+    }
+
+    return tree;
+  }
+
+  /**
+   * Render file tree recursively
+   */
+  renderTree(node, path = '', depth = 0) {
+    let html = '';
+    const entries = Object.entries(node.children).sort((a, b) => {
+      // Folders first, then files
+      const [aName, aNode] = a;
+      const [bName, bNode] = b;
+
+      if (aNode.type !== bNode.type) {
+        return aNode.type === 'folder' ? -1 : 1;
+      }
+      return aName.localeCompare(bName);
+    });
+
+    for (const [name, childNode] of entries) {
+      const fullPath = path ? `${path}/${name}` : name;
+      const indent = depth * 16; // 16px per level
+
+      if (childNode.type === 'folder') {
+        const isExpanded = this.expandedFolders.has(fullPath);
+        const folderIcon = isExpanded ? '📂' : '📁';
+        const arrowIcon = isExpanded ? '▼' : '▶';
+
+        html += `
+          <div class="file-tree-folder" style="padding-left: ${indent}px;" data-folder-path="${fullPath}">
+            <span class="folder-arrow">${arrowIcon}</span>
+            <span class="folder-icon">${folderIcon}</span>
+            <span class="folder-name">${this.escapeHtml(name)}</span>
+          </div>
+        `;
+
+        if (isExpanded) {
+          html += this.renderTree(childNode, fullPath, depth + 1);
+        }
+      } else {
+        const icon = this.getFileIcon(childNode.file.language);
+        const modified = this.formatDate(childNode.file.modified);
+
+        html += `
+          <div
+            class="file-tree-item"
+            style="padding-left: ${indent + 16}px;"
+            data-file-id="${childNode.file.id}"
+            title="${fullPath}"
+          >
+            <div class="file-icon">${icon}</div>
+            <div class="file-info">
+              <div class="file-name">${this.escapeHtml(name)}</div>
+              <div class="file-meta">
+                <span class="file-language">${this.formatLanguage(childNode.file.language)}</span>
+                <span class="file-date">${modified}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    return html;
+  }
+
+  /**
    * Render file list
    */
   renderFileList() {
@@ -256,34 +373,21 @@ export default class FileExplorer {
       return;
     }
 
-    let html = '';
-
-    for (const file of this.filteredFiles) {
-      const icon = this.getFileIcon(file.language);
-      const modified = this.formatDate(file.modified);
-
-      html += `
-        <div
-          class="file-item"
-          data-file-id="${file.id}"
-          title="${file.name}"
-        >
-          <div class="file-icon">${icon}</div>
-          <div class="file-info">
-            <div class="file-name">${this.escapeHtml(file.name)}</div>
-            <div class="file-meta">
-              <span class="file-language">${this.formatLanguage(file.language)}</span>
-              <span class="file-date">${modified}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
+    // Build and render tree
+    const tree = this.buildFileTree(this.filteredFiles);
+    const html = this.renderTree(tree);
     fileList.innerHTML = html;
 
+    // Attach folder event listeners
+    fileList.querySelectorAll('.file-tree-folder').forEach(folder => {
+      folder.addEventListener('click', (e) => {
+        const folderPath = folder.getAttribute('data-folder-path');
+        this.toggleFolder(folderPath);
+      });
+    });
+
     // Attach file item event listeners
-    fileList.querySelectorAll('.file-item').forEach(item => {
+    fileList.querySelectorAll('.file-tree-item').forEach(item => {
       const fileId = parseInt(item.getAttribute('data-file-id'));
 
       // Click to open
@@ -297,6 +401,18 @@ export default class FileExplorer {
         this.showContextMenu(e.clientX, e.clientY, fileId);
       });
     });
+  }
+
+  /**
+   * Toggle folder expand/collapse
+   */
+  toggleFolder(path) {
+    if (this.expandedFolders.has(path)) {
+      this.expandedFolders.delete(path);
+    } else {
+      this.expandedFolders.add(path);
+    }
+    this.renderFileList();
   }
 
   /**
@@ -465,6 +581,14 @@ export default class FileExplorer {
       const file = await this.fileManager.loadFile(fileId);
       if (!file) return;
 
+      // Ensure file has proper extension
+      let fileName = file.name;
+      if (!fileName.includes('.')) {
+        // Add extension based on language
+        const ext = this.getFileExtension(file.language);
+        fileName = `${fileName}${ext}`;
+      }
+
       // Create a Blob from the file content
       const blob = new Blob([file.content], { type: 'text/plain;charset=utf-8' });
 
@@ -472,7 +596,7 @@ export default class FileExplorer {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = file.name;
+      a.download = fileName;
       a.style.display = 'none';
 
       // Trigger download
@@ -485,11 +609,42 @@ export default class FileExplorer {
         URL.revokeObjectURL(url);
       }, 100);
 
-      this.toast.success(`Downloaded "${file.name}"`);
+      this.toast.success(`Downloaded "${fileName}"`);
     } catch (error) {
       console.error('Failed to download file:', error);
       this.showError('Failed to download file');
     }
+  }
+
+  /**
+   * Get file extension based on language
+   */
+  getFileExtension(language) {
+    const extensions = {
+      javascript: '.js',
+      typescript: '.ts',
+      python: '.py',
+      lua: '.lua',
+      sqlite: '.sql',
+      postgresql: '.sql',
+      duckdb: '.sql',
+      ruby: '.rb',
+      php: '.php',
+      r: '.r',
+      perl: '.pl',
+      scheme: '.scm',
+      commonlisp: '.lisp',
+      clojure: '.clj',
+      prolog: '.pl',
+      basic: '.bas',
+      markdown: '.md',
+      html: '.html',
+      css: '.css',
+      json: '.json',
+      xml: '.xml',
+    };
+
+    return extensions[language] || '.txt';
   }
 
   /**
@@ -735,6 +890,102 @@ export default class FileExplorer {
    */
   async refresh() {
     await this.loadFiles();
+  }
+
+  /**
+   * Download all files as ZIP
+   */
+  async downloadAllFiles() {
+    try {
+      if (this.files.length === 0) {
+        this.toast.show('No files to download', 'info');
+        return;
+      }
+
+      // Dynamically import JSZip
+      const JSZip = (await import('jszip')).default;
+
+      // Create ZIP file
+      const zip = new JSZip();
+
+      // Add all files to ZIP
+      for (const file of this.files) {
+        // Ensure file has proper extension
+        let fileName = file.name;
+        if (!fileName.includes('.')) {
+          const ext = this.getFileExtension(file.language);
+          fileName = `${fileName}${ext}`;
+        }
+
+        zip.file(fileName, file.content);
+      }
+
+      // Generate ZIP blob
+      const blob = await zip.generateAsync({ type: 'blob' });
+
+      // Download ZIP
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `drlee-files-${new Date().toISOString().split('T')[0]}.zip`;
+      a.style.display = 'none';
+
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      this.toast.success(`Downloaded ${this.files.length} files as ZIP`);
+    } catch (error) {
+      console.error('Failed to download all files:', error);
+      this.showError(`Failed to download files: ${error.message}`);
+    }
+  }
+
+  /**
+   * Clear all files after confirmation
+   */
+  async clearAllFiles() {
+    try {
+      if (this.files.length === 0) {
+        this.toast.show('No files to clear', 'info');
+        return;
+      }
+
+      // Show confirmation dialog
+      const confirmed = await this.toast.confirm(
+        `Delete all ${this.files.length} files? This cannot be undone.`,
+        {
+          confirmText: 'Delete All',
+          cancelText: 'Cancel',
+        }
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      // Delete all files
+      for (const file of this.files) {
+        await this.fileManager.deleteFile(file.id);
+
+        // Notify parent if file was deleted
+        if (this.onFileDelete) {
+          this.onFileDelete(file.id);
+        }
+      }
+
+      // Refresh file list
+      await this.loadFiles();
+
+      this.toast.success(`Deleted ${this.files.length} files`);
+    } catch (error) {
+      console.error('Failed to clear all files:', error);
+      this.showError(`Failed to clear files: ${error.message}`);
+    }
   }
 
   /**

@@ -729,7 +729,16 @@ class DrLeeIDE {
       // Switch to preview mode
       const content = this.editor.getValue();
       const fileName = this.currentFile?.name || '';
-      const previewMode = PreviewPanel.getPreviewMode(fileName);
+      let previewMode = PreviewPanel.getPreviewMode(fileName);
+
+      // If we can't determine from filename, use current language
+      if (!previewMode && this.currentLanguage) {
+        if (this.currentLanguage === 'markdown') {
+          previewMode = 'markdown';
+        } else if (this.currentLanguage === 'html') {
+          previewMode = 'html';
+        }
+      }
 
       if (previewMode === 'markdown') {
         this.previewPanel.showMarkdown(content);
@@ -757,6 +766,7 @@ class DrLeeIDE {
     const canPreviewByFile = PreviewPanel.canPreview(fileName);
     const canPreviewByLanguage = ['markdown', 'html'].includes(this.currentLanguage);
 
+    // Always show preview for markdown/html languages, even if file has no extension
     const canPreview = canPreviewByFile || canPreviewByLanguage;
 
     if (canPreview) {
@@ -932,13 +942,35 @@ class DrLeeIDE {
     const extensions = {
       javascript: 'js',
       typescript: 'ts',
+      coffeescript: 'coffee',
+      markdown: 'md',
+      json: 'json',
+      css: 'css',
+      html: 'html',
+      xml: 'xml',
+      yaml: 'yaml',
+      shell: 'sh',
       python: 'py',
       lua: 'lua',
-      sqlite: 'sql',
+      r: 'r',
       ruby: 'rb',
       php: 'php',
-      r: 'r',
+      sqlite: 'sql',
+      duckdb: 'sql',
+      postgresql: 'sql',
+      mysql: 'sql',
+      scheme: 'scm',
+      commonlisp: 'lisp',
+      racket: 'rkt',
+      clojure: 'clj',
+      prolog: 'pl',
+      basic: 'bas',
+      pascal: 'pas',
+      tcl: 'tcl',
       perl: 'pl',
+      blockly: 'xml',
+      p5js: 'js',
+      jupyterlite: 'ipynb',
     };
 
     return extensions[language] || 'txt';
@@ -1019,13 +1051,26 @@ class DrLeeIDE {
         this.currentFile.language = language;
       }
 
+      // Get the active tab ID
+      const activeTabId = this.tabBar.getActiveTabId();
+
+      // Update filename with correct extension if it's an untitled file
+      if (this.currentFile && (this.currentFile.name === 'Untitled' || this.currentFile.name.startsWith('Untitled.'))) {
+        const newFileName = `Untitled.${this.getFileExtension(language)}`;
+        this.currentFile.name = newFileName;
+
+        // Update tab with new filename
+        if (activeTabId) {
+          this.tabBar.updateTab(activeTabId, { name: newFileName });
+        }
+      }
+
       // Load default code for new language if current file is untitled
-      if (this.currentFile && this.currentFile.name === 'Untitled') {
+      if (this.currentFile && this.currentFile.name.startsWith('Untitled')) {
         const defaultCode = this.editor.getDefaultCode(language);
         this.editor.setValue(defaultCode);
 
         // Update the file content in openFiles map
-        const activeTabId = this.tabBar.getActiveTabId();
         if (activeTabId) {
           const fileData = this.openFiles.get(activeTabId);
           if (fileData) {
@@ -1042,7 +1087,6 @@ class DrLeeIDE {
       }
 
       // Update tab language
-      const activeTabId = this.tabBar.getActiveTabId();
       if (activeTabId) {
         this.tabBar.updateTab(activeTabId, { language: language });
       }
@@ -1067,7 +1111,7 @@ class DrLeeIDE {
    */
   handleNewTab() {
     const tabId = `new-${Date.now()}`;
-    const fileName = 'Untitled';
+    const fileName = `Untitled.${this.getFileExtension(this.currentLanguage)}`;
 
     // Add tab
     this.tabBar.addTab({

@@ -155,16 +155,15 @@ export default class AIContextManager {
 
     const contextMessage = contextParts.join('\n');
 
-    // Build messages array
+    // Build messages array - WebLLM only allows ONE system message
+    const systemContent = contextMessage
+      ? `${systemPrompt}\n\n${contextMessage}`
+      : systemPrompt;
+
     const messages = [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: systemContent },
+      { role: 'user', content: userMessage }
     ];
-
-    if (contextMessage) {
-      messages.push({ role: 'system', content: contextMessage });
-    }
-
-    messages.push({ role: 'user', content: userMessage });
 
     return messages;
   }

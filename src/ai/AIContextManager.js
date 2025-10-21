@@ -13,6 +13,15 @@ export default class AIContextManager {
     this.cursorPosition = { line: 0, column: 0 };
     this.openFiles = [];
     this.recentErrors = [];
+    this.customSystemPrompt = ''; // Custom system prompt from settings
+  }
+
+  /**
+   * Set custom system prompt
+   * @param {string} prompt - Custom system prompt
+   */
+  setCustomSystemPrompt(prompt) {
+    this.customSystemPrompt = prompt || '';
   }
 
   /**
@@ -174,6 +183,11 @@ export default class AIContextManager {
    * @returns {string}
    */
   getSystemPrompt() {
+    // Use custom system prompt if set, otherwise use default
+    if (this.customSystemPrompt) {
+      return this.customSystemPrompt;
+    }
+
     return `You are an AI coding assistant integrated into DrLee IDE, a browser-based development environment supporting 30+ programming languages.
 
 Your role:

@@ -1,3 +1,5 @@
+import AISettings from '../../ai/AISettings.js';
+
 /**
  * AIChatPanel - AI assistant chat interface
  *
@@ -8,6 +10,7 @@ export default class AIChatPanel {
     this.container = container;
     this.aiRuntime = aiRuntime;
     this.contextManager = contextManager;
+    this.settings = new AISettings();
     this.messages = [];
     this.isVisible = false;
     this.isMinimized = false;
@@ -24,6 +27,8 @@ export default class AIChatPanel {
     this.minimizeButton = null;
     this.closeButton = null;
     this.toggleButton = null;
+    this.settingsButton = null;
+    this.settingsDialog = null;
   }
 
   /**
@@ -52,6 +57,7 @@ export default class AIChatPanel {
           <select class="ai-model-selector" title="Select AI Model">
             <option value="">Loading models...</option>
           </select>
+          <button class="ai-settings-btn" title="Settings">⚙️</button>
           <button class="ai-minimize-btn" title="Minimize">_</button>
           <button class="ai-close-btn" title="Close">×</button>
         </div>
@@ -110,12 +116,19 @@ export default class AIChatPanel {
     this.sendButton = this.panel.querySelector('.ai-send-btn');
     this.modelSelector = this.panel.querySelector('.ai-model-selector');
     this.statusBar = this.panel.querySelector('.ai-chat-status-bar');
+    this.settingsButton = this.panel.querySelector('.ai-settings-btn');
     this.minimizeButton = this.panel.querySelector('.ai-minimize-btn');
     this.closeButton = this.panel.querySelector('.ai-close-btn');
+
+    // Create settings dialog
+    this.createSettingsDialog();
 
     // Add to container
     this.container.appendChild(this.panel);
     document.body.appendChild(this.toggleButton);
+
+    // Load and apply settings
+    this.applySettings();
 
     // Add welcome message
     this.addSystemMessage('Welcome to AI Assistant! Click "Load Model" below to get started.');
@@ -123,6 +136,112 @@ export default class AIChatPanel {
 
     // Populate model selector
     this.populateModelSelector();
+  }
+
+  /**
+   * Create settings dialog
+   */
+  createSettingsDialog() {
+    this.settingsDialog = document.createElement('div');
+    this.settingsDialog.className = 'ai-settings-dialog';
+    this.settingsDialog.style.display = 'none';
+    this.settingsDialog.innerHTML = `
+      <div class="ai-settings-backdrop"></div>
+      <div class="ai-settings-content">
+        <div class="ai-settings-header">
+          <h3>AI Settings</h3>
+          <button class="ai-settings-close">×</button>
+        </div>
+        <div class="ai-settings-body">
+          <div class="ai-settings-section">
+            <h4>System Prompt</h4>
+            <textarea
+              class="ai-setting-system-prompt"
+              placeholder="Leave empty to use default system prompt..."
+              rows="6"
+            ></textarea>
+            <small>Custom instructions for the AI assistant. Leave empty for default behavior.</small>
+          </div>
+
+          <div class="ai-settings-section">
+            <h4>Model Parameters</h4>
+
+            <div class="ai-setting-row">
+              <label>
+                Temperature <span class="ai-setting-value">0.7</span>
+                <input type="range" class="ai-setting-temperature" min="0" max="2" step="0.1" value="0.7">
+              </label>
+              <small>Higher = more creative, Lower = more focused</small>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Max Tokens <span class="ai-setting-value">1000</span>
+                <input type="range" class="ai-setting-max-tokens" min="100" max="4000" step="100" value="1000">
+              </label>
+              <small>Maximum length of AI responses</small>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Top P <span class="ai-setting-value">0.9</span>
+                <input type="range" class="ai-setting-top-p" min="0" max="1" step="0.05" value="0.9">
+              </label>
+              <small>Nucleus sampling threshold</small>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Frequency Penalty <span class="ai-setting-value">0.0</span>
+                <input type="range" class="ai-setting-freq-penalty" min="0" max="2" step="0.1" value="0">
+              </label>
+              <small>Reduce repetition of tokens</small>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Presence Penalty <span class="ai-setting-value">0.0</span>
+                <input type="range" class="ai-setting-pres-penalty" min="0" max="2" step="0.1" value="0">
+              </label>
+              <small>Encourage topic diversity</small>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Seed
+                <input type="number" class="ai-setting-seed" min="0" step="1" value="0">
+              </label>
+              <small>For reproducible responses (0 = random)</small>
+            </div>
+          </div>
+
+          <div class="ai-settings-section">
+            <h4>UI Preferences</h4>
+
+            <div class="ai-setting-row">
+              <label>
+                <input type="checkbox" class="ai-setting-auto-load">
+                Auto-load model on startup
+              </label>
+            </div>
+
+            <div class="ai-setting-row">
+              <label>
+                Chat History Size
+                <input type="number" class="ai-setting-history-size" min="10" max="200" step="10" value="50">
+              </label>
+              <small>Number of messages to keep in history</small>
+            </div>
+          </div>
+        </div>
+        <div class="ai-settings-footer">
+          <button class="ai-settings-reset">Reset to Defaults</button>
+          <button class="ai-settings-save">Save</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(this.settingsDialog);
   }
 
   /**
@@ -233,6 +352,31 @@ export default class AIChatPanel {
     // Minimize/Close buttons
     this.minimizeButton.addEventListener('click', () => this.minimize());
     this.closeButton.addEventListener('click', () => this.hide());
+
+    // Settings button
+    this.settingsButton.addEventListener('click', () => this.openSettings());
+
+    // Settings dialog buttons
+    const settingsClose = this.settingsDialog.querySelector('.ai-settings-close');
+    const settingsSave = this.settingsDialog.querySelector('.ai-settings-save');
+    const settingsReset = this.settingsDialog.querySelector('.ai-settings-reset');
+    const settingsBackdrop = this.settingsDialog.querySelector('.ai-settings-backdrop');
+
+    settingsClose.addEventListener('click', () => this.closeSettings());
+    settingsBackdrop.addEventListener('click', () => this.closeSettings());
+    settingsSave.addEventListener('click', () => this.saveSettings());
+    settingsReset.addEventListener('click', () => this.resetSettings());
+
+    // Update value displays for range inputs
+    const rangeInputs = this.settingsDialog.querySelectorAll('input[type="range"]');
+    rangeInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        const valueSpan = e.target.parentElement.querySelector('.ai-setting-value');
+        if (valueSpan) {
+          valueSpan.textContent = e.target.value;
+        }
+      });
+    });
 
     // Send button
     this.sendButton.addEventListener('click', () => this.handleSend());
@@ -357,12 +501,16 @@ export default class AIChatPanel {
       let responseText = '';
       const messageId = this.addAssistantMessage('');
 
+      // Get model parameters from settings
+      const options = this.settings.getModelParameters();
+
       await this.aiRuntime.chatStream(
         messages,
         (chunk) => {
           responseText += chunk;
           this.updateAssistantMessage(messageId, responseText);
-        }
+        },
+        options
       );
 
       // Store message in history
@@ -439,12 +587,16 @@ export default class AIChatPanel {
       let responseText = '';
       const messageId = this.addAssistantMessage('');
 
+      // Get model parameters from settings
+      const options = this.settings.getModelParameters();
+
       await this.aiRuntime.chatStream(
         messages,
         (chunk) => {
           responseText += chunk;
           this.updateAssistantMessage(messageId, responseText);
-        }
+        },
+        options
       );
     } catch (error) {
       console.error('Action error:', error);
@@ -683,5 +835,113 @@ export default class AIChatPanel {
     this.messagesContainer.innerHTML = '';
     this.messages = [];
     this.addSystemMessage('Chat cleared.');
+  }
+
+  /**
+   * Open settings dialog
+   */
+  openSettings() {
+    this.settingsDialog.style.display = 'block';
+  }
+
+  /**
+   * Close settings dialog
+   */
+  closeSettings() {
+    this.settingsDialog.style.display = 'none';
+  }
+
+  /**
+   * Apply settings from storage to UI
+   */
+  applySettings() {
+    const all = this.settings.getAll();
+
+    // System prompt
+    const systemPromptInput = this.settingsDialog.querySelector('.ai-setting-system-prompt');
+    systemPromptInput.value = all.systemPrompt || '';
+    this.contextManager.setCustomSystemPrompt(all.systemPrompt);
+
+    // Model parameters
+    this.setRangeValue('.ai-setting-temperature', all.temperature);
+    this.setRangeValue('.ai-setting-max-tokens', all.maxTokens);
+    this.setRangeValue('.ai-setting-top-p', all.topP);
+    this.setRangeValue('.ai-setting-freq-penalty', all.frequencyPenalty);
+    this.setRangeValue('.ai-setting-pres-penalty', all.presencePenalty);
+
+    const seedInput = this.settingsDialog.querySelector('.ai-setting-seed');
+    seedInput.value = all.seed;
+
+    // UI preferences
+    const autoLoadCheckbox = this.settingsDialog.querySelector('.ai-setting-auto-load');
+    autoLoadCheckbox.checked = all.autoLoadModel;
+
+    const historySizeInput = this.settingsDialog.querySelector('.ai-setting-history-size');
+    historySizeInput.value = all.chatHistorySize;
+  }
+
+  /**
+   * Set range input value and update display
+   */
+  setRangeValue(selector, value) {
+    const input = this.settingsDialog.querySelector(selector);
+    if (input) {
+      input.value = value;
+      const valueSpan = input.parentElement.querySelector('.ai-setting-value');
+      if (valueSpan) {
+        valueSpan.textContent = value;
+      }
+    }
+  }
+
+  /**
+   * Save settings from UI to storage
+   */
+  saveSettings() {
+    // Get values from UI
+    const systemPrompt = this.settingsDialog.querySelector('.ai-setting-system-prompt').value;
+    const temperature = parseFloat(this.settingsDialog.querySelector('.ai-setting-temperature').value);
+    const maxTokens = parseInt(this.settingsDialog.querySelector('.ai-setting-max-tokens').value);
+    const topP = parseFloat(this.settingsDialog.querySelector('.ai-setting-top-p').value);
+    const frequencyPenalty = parseFloat(this.settingsDialog.querySelector('.ai-setting-freq-penalty').value);
+    const presencePenalty = parseFloat(this.settingsDialog.querySelector('.ai-setting-pres-penalty').value);
+    const seed = parseInt(this.settingsDialog.querySelector('.ai-setting-seed').value);
+    const autoLoadModel = this.settingsDialog.querySelector('.ai-setting-auto-load').checked;
+    const chatHistorySize = parseInt(this.settingsDialog.querySelector('.ai-setting-history-size').value);
+
+    // Update settings
+    this.settings.update({
+      systemPrompt,
+      temperature,
+      maxTokens,
+      topP,
+      frequencyPenalty,
+      presencePenalty,
+      seed,
+      autoLoadModel,
+      chatHistorySize,
+    });
+
+    // Apply custom system prompt to context manager
+    this.contextManager.setCustomSystemPrompt(systemPrompt);
+
+    // Show confirmation
+    this.addSystemMessage('✅ Settings saved successfully!');
+
+    // Close dialog
+    this.closeSettings();
+  }
+
+  /**
+   * Reset settings to defaults
+   */
+  resetSettings() {
+    if (!confirm('Reset all settings to defaults?')) {
+      return;
+    }
+
+    this.settings.reset();
+    this.applySettings();
+    this.addSystemMessage('✅ Settings reset to defaults.');
   }
 }

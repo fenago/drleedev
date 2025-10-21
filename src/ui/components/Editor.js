@@ -551,6 +551,395 @@ SELECT * FROM users ORDER BY name;
 
 -- ✨ Ready to code! Press Ctrl+Enter to run.
 `,
+      css: `/* CSS - Press Ctrl+Enter to validate */
+
+/* Example CSS */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+}
+`,
+      html: `<!DOCTYPE html>
+<!-- HTML - Press Ctrl+Enter to validate -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello from HTML!</h1>
+  <p>This is a simple HTML page.</p>
+
+  <button onclick="alert('Hello!')">Click me</button>
+
+  <script>
+    console.log('Page loaded successfully!');
+  </script>
+</body>
+</html>
+`,
+      xml: `<?xml version="1.0" encoding="UTF-8"?>
+<!-- XML - Press Ctrl+Enter to validate -->
+<library>
+  <book id="1">
+    <title>The Pragmatic Programmer</title>
+    <author>Andrew Hunt</author>
+    <author>David Thomas</author>
+    <year>1999</year>
+    <isbn>978-0201616224</isbn>
+  </book>
+  <book id="2">
+    <title>Clean Code</title>
+    <author>Robert C. Martin</author>
+    <year>2008</year>
+    <isbn>978-0132350884</isbn>
+  </book>
+</library>
+`,
+      yaml: `# YAML - Press Ctrl+Enter to validate
+
+# Configuration Example
+app:
+  name: "DrLee IDE"
+  version: "1.0.0"
+  debug: true
+
+database:
+  host: localhost
+  port: 5432
+  name: myapp
+  credentials:
+    user: admin
+    password: secret
+
+features:
+  - code_execution
+  - file_management
+  - multi_language_support
+
+languages:
+  - name: JavaScript
+    extensions: [js, mjs]
+  - name: Python
+    extensions: [py, pyw]
+  - name: TypeScript
+    extensions: [ts, tsx]
+`,
+      shell: `#!/bin/bash
+# Shell - Press Ctrl+Enter to simulate
+
+# This is a bash shell simulator (doesn't actually execute on system)
+# Safe commands: ls, cd, pwd, cat, grep, wc, echo, etc.
+
+echo "Hello from Shell!"
+
+# List files
+ls -la
+
+# Current directory
+pwd
+
+# Create some variables
+NAME="DrLee IDE"
+VERSION="1.0.0"
+
+echo "Welcome to $NAME v$VERSION"
+
+# Simple loop
+for i in 1 2 3 4 5; do
+  echo "Count: $i"
+done
+
+# Note: This is a simulator - no actual system commands are executed
+`,
+      assemblyscript: `// AssemblyScript - Press Ctrl+Enter to compile to WASM
+
+// AssemblyScript is a TypeScript-like language that compiles to WebAssembly
+
+function fibonacci(n: i32): i32 {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+function factorial(n: i32): i32 {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}
+
+// Export functions to be called from JavaScript
+export function calculate(n: i32): i32 {
+  const fib = fibonacci(n);
+  const fact = factorial(n);
+  return fib + fact;
+}
+
+// Entry point
+export function start(): void {
+  const result = calculate(10);
+  console.log("Result: " + result.toString());
+}
+`,
+      perl: `# Perl - Press Ctrl+Enter to run
+# Uses Perlito5 compiler (Perl to JavaScript)
+
+print "Hello from Perl!\\n";
+
+# Variables
+my $name = "DrLee IDE";
+my $version = "1.0.0";
+
+print "Welcome to $name v$version\\n";
+
+# Arrays
+my @numbers = (1, 2, 3, 4, 5);
+my $sum = 0;
+foreach my $num (@numbers) {
+  $sum += $num;
+}
+print "Sum: $sum\\n";
+
+# Hashes
+my %user = (
+  name => "Alice",
+  age => 30,
+  email => "alice@example.com"
+);
+
+print "User: $user{name}, Age: $user{age}\\n";
+
+# Subroutines
+sub greet {
+  my ($name) = @_;
+  return "Hello, $name!";
+}
+
+print greet("World"), "\\n";
+`,
+      mysql: `-- MySQL - Press Ctrl+Enter to run
+-- Note: Uses SQLite backend with MySQL-compatible syntax
+
+-- Create a table
+CREATE TABLE products (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  price DECIMAL(10, 2),
+  category VARCHAR(50),
+  stock INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert data
+INSERT INTO products (name, price, category, stock) VALUES
+  ('Laptop', 999.99, 'Electronics', 50),
+  ('Mouse', 24.99, 'Electronics', 200),
+  ('Desk Chair', 199.99, 'Furniture', 30),
+  ('Notebook', 4.99, 'Stationery', 500);
+
+-- Query with aggregation
+SELECT
+  category,
+  COUNT(*) as total_products,
+  AVG(price) as avg_price,
+  SUM(stock) as total_stock
+FROM products
+GROUP BY category
+ORDER BY avg_price DESC;
+
+-- View all products
+SELECT * FROM products ORDER BY price DESC;
+`,
+      blockly: `<!-- Blockly - Press Ctrl+Enter to execute blocks -->
+<!-- This is Blockly XML workspace format -->
+
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="text_print" x="20" y="20">
+    <value name="TEXT">
+      <shadow type="text">
+        <field name="TEXT">Hello from Blockly!</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="math_arithmetic" x="20" y="80">
+    <field name="OP">ADD</field>
+    <value name="A">
+      <shadow type="math_number">
+        <field name="NUM">5</field>
+      </shadow>
+    </value>
+    <value name="B">
+      <shadow type="math_number">
+        <field name="NUM">10</field>
+      </shadow>
+    </value>
+  </block>
+</xml>
+
+<!-- Note: Blockly is best used with a visual editor -->
+<!-- This XML format can be generated from blocks -->
+`,
+      p5js: `// p5.js - Press Ctrl+Enter to run
+// Creative coding library for graphics and interactivity
+
+// Setup function - runs once at start
+function setup(p) {
+  // Create canvas
+  p.createCanvas(400, 400);
+  p.background(220);
+
+  // Draw a circle
+  p.fill(255, 0, 100);
+  p.circle(200, 200, 100);
+
+  // Draw text
+  p.fill(0);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(32);
+  p.text('Hello p5.js!', 200, 200);
+
+  console.log('p5.js sketch started!');
+}
+
+// Draw function - runs repeatedly
+function draw(p) {
+  // Uncomment to create interactive animation
+  // p.background(220);
+  // p.fill(255, 0, 100);
+  // p.circle(p.mouseX, p.mouseY, 50);
+}
+
+// Mouse pressed event
+function mousePressed(p) {
+  console.log('Mouse clicked at:', p.mouseX, p.mouseY);
+}
+
+// Note: In browser, creates a visible canvas
+// Check console for output
+`,
+      racket: `#lang racket
+; Racket - Press Ctrl+Enter to run
+; Note: Uses Scheme R7RS compatibility mode
+
+(display "Hello from Racket!")
+(newline)
+
+; Define a function
+(define (square x)
+  (* x x))
+
+; Use the function
+(display "5 squared is: ")
+(display (square 5))
+(newline)
+
+; List operations
+(define numbers (list 1 2 3 4 5))
+(display "Numbers: ")
+(display numbers)
+(newline)
+
+; Map function
+(define squared (map square numbers))
+(display "Squared: ")
+(display squared)
+(newline)
+
+; Note: This is Scheme-compatible Racket
+; Not all Racket features are supported
+`,
+      pascal: `program HelloWorld;
+{ Pascal - Press Ctrl+Enter to run }
+{ Educational Pascal interpreter }
+
+var
+  name: string;
+  age: integer;
+  price: real;
+
+begin
+  { Output }
+  WriteLn('Hello from Pascal!');
+  WriteLn('');
+  WriteLn('Welcome to DrLee IDE');
+
+  { Simple assignments }
+  name := 'Alice';
+  age := 30;
+  price := 99.99;
+
+  { Output variables }
+  WriteLn(name);
+  WriteLn(age);
+  WriteLn(price);
+
+  WriteLn('');
+  WriteLn('Note: This is a basic educational Pascal interpreter');
+  WriteLn('For full Pascal, use Free Pascal or Delphi');
+end.
+`,
+      tcl: `# Tcl - Press Ctrl+Enter to run
+# Tool Command Language
+
+puts "Hello from Tcl!"
+
+# Variables
+set name "DrLee IDE"
+set version "1.0.0"
+
+puts "Welcome to $name v$version"
+
+# Expressions
+set a 10
+set b 20
+set sum [expr {$a + $b}]
+puts "Sum: $sum"
+
+# Increment
+incr a 5
+puts "After increment: $a"
+
+# String operations
+set text "Hello World"
+set length [string length $text]
+puts "Length: $length"
+
+# Append to variable
+set message "Tcl"
+append message " is awesome!"
+puts $message
+
+# Note: Basic Tcl interpreter for educational use
+`,
     };
 
     return defaults[language] || `// ${language}\n`;

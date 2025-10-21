@@ -3,6 +3,12 @@ import TypeScriptRuntime from './languages/TypeScriptRuntime.js';
 import CoffeeScriptRuntime from './languages/CoffeeScriptRuntime.js';
 import MarkdownRuntime from './languages/MarkdownRuntime.js';
 import JSONRuntime from './languages/JSONRuntime.js';
+import CSSRuntime from './languages/CSSRuntime.js';
+import HTMLRuntime from './languages/HTMLRuntime.js';
+import XMLRuntime from './languages/XMLRuntime.js';
+import YAMLRuntime from './languages/YAMLRuntime.js';
+import ShellRuntime from './languages/ShellRuntime.js';
+// import AssemblyScriptRuntime from './languages/AssemblyScriptRuntime.js'; // TODO: Requires top-level await support
 import PythonRuntime from './languages/PythonRuntime.js';
 import LuaRuntime from './languages/LuaRuntime.js';
 import RRuntime from './languages/RRuntime.js';
@@ -16,7 +22,14 @@ import ClojureRuntime from './languages/ClojureRuntime.js';
 import SQLiteRuntime from './databases/SQLiteRuntime.js';
 import DuckDBRuntime from './databases/DuckDBRuntime.js';
 import PostgreSQLRuntime from './databases/PostgreSQLRuntime.js';
+import MySQLRuntime from './databases/MySQLRuntime.js';
 import JupyterLiteRuntime from './notebooks/JupyterLiteRuntime.js';
+// import PerlRuntime from './languages/PerlRuntime.js'; // Disabled - no browser support
+import BlocklyRuntime from './languages/BlocklyRuntime.js';
+import P5Runtime from './languages/P5Runtime.js';
+import RacketRuntime from './languages/RacketRuntime.js';
+import PascalRuntime from './languages/PascalRuntime.js';
+import TclRuntime from './languages/TclRuntime.js';
 
 /**
  * RuntimeManager - Manages all programming language runtimes
@@ -61,6 +74,42 @@ export default class RuntimeManager {
         tier: 'free',
         lazy: false, // JSON is native (no loading needed)
       },
+      css: {
+        class: CSSRuntime,
+        displayName: 'CSS',
+        tier: 'free',
+        lazy: false, // CSS validation is native
+      },
+      html: {
+        class: HTMLRuntime,
+        displayName: 'HTML',
+        tier: 'free',
+        lazy: false, // HTML validation is native (DOMParser)
+      },
+      xml: {
+        class: XMLRuntime,
+        displayName: 'XML',
+        tier: 'free',
+        lazy: false, // XML validation is native (DOMParser)
+      },
+      yaml: {
+        class: YAMLRuntime,
+        displayName: 'YAML',
+        tier: 'free',
+        lazy: true, // Load js-yaml library on demand
+      },
+      shell: {
+        class: ShellRuntime,
+        displayName: 'Shell',
+        tier: 'free',
+        lazy: false, // Shell simulator is lightweight
+      },
+      // assemblyscript: {
+      //   class: AssemblyScriptRuntime,
+      //   displayName: 'AssemblyScript',
+      //   tier: 'free',
+      //   lazy: true, // Load AssemblyScript compiler on demand
+      // },
       python: {
         class: PythonRuntime,
         displayName: 'Python',
@@ -144,6 +193,48 @@ export default class RuntimeManager {
         displayName: 'Clojure',
         tier: 'pro',
         lazy: true, // Load on demand (100KB)
+      },
+      // perl: {  // Disabled - no browser implementation available
+      //   class: PerlRuntime,
+      //   displayName: 'Perl',
+      //   tier: 'pro',
+      //   lazy: true, // Load on demand (500KB)
+      // },
+      blockly: {
+        class: BlocklyRuntime,
+        displayName: 'Blockly',
+        tier: 'free',
+        lazy: true, // Load on demand (800KB)
+      },
+      p5js: {
+        class: P5Runtime,
+        displayName: 'p5.js',
+        tier: 'free',
+        lazy: true, // Load on demand (1MB)
+      },
+      mysql: {
+        class: MySQLRuntime,
+        displayName: 'MySQL',
+        tier: 'free',
+        lazy: true, // Load on demand (2MB)
+      },
+      racket: {
+        class: RacketRuntime,
+        displayName: 'Racket',
+        tier: 'pro',
+        lazy: true, // Load on demand (500KB)
+      },
+      pascal: {
+        class: PascalRuntime,
+        displayName: 'Pascal',
+        tier: 'free',
+        lazy: false, // Native implementation
+      },
+      tcl: {
+        class: TclRuntime,
+        displayName: 'Tcl',
+        tier: 'pro',
+        lazy: false, // Native implementation
       },
     };
   }

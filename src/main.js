@@ -35,7 +35,7 @@ class DrLeeIDE {
     this.settingsPanel = null;
     this.gitCloneDialog = null;
 
-    this.currentLanguage = 'python';
+    this.currentLanguage = 'markdown';
     this.currentFile = null; // Currently open file
     this.openFiles = new Map(); // Map of tabId -> file content
     this.isExecuting = false;
@@ -73,6 +73,10 @@ class DrLeeIDE {
 
       // Open initial tab
       this.handleNewTab();
+
+      // Update button visibility (preview, validator)
+      this.updatePreviewVisibility();
+      this.updateValidatorVisibility();
 
       // Hide loading overlay
       this.hideLoading();
@@ -384,6 +388,12 @@ class DrLeeIDE {
     const previewToggleBtn = document.getElementById('preview-toggle');
     if (previewToggleBtn) {
       previewToggleBtn.addEventListener('click', () => this.handlePreviewToggle());
+    }
+
+    // Validator button
+    const validateBtn = document.getElementById('validate-btn');
+    if (validateBtn) {
+      validateBtn.addEventListener('click', () => this.handleValidate());
     }
 
     // Panel resizer
@@ -742,17 +752,84 @@ class DrLeeIDE {
     const previewToggleBtn = document.getElementById('preview-toggle');
     if (!previewToggleBtn) return;
 
+    // Check both file extension and current language
     const fileName = this.currentFile?.name || '';
-    const canPreview = PreviewPanel.canPreview(fileName);
+    const canPreviewByFile = PreviewPanel.canPreview(fileName);
+    const canPreviewByLanguage = ['markdown', 'html'].includes(this.currentLanguage);
+
+    const canPreview = canPreviewByFile || canPreviewByLanguage;
 
     if (canPreview) {
-      previewToggleBtn.style.display = 'block';
+      previewToggleBtn.style.display = 'inline-flex';
     } else {
       previewToggleBtn.style.display = 'none';
       // If preview button is hidden, make sure we're in editor mode
       if (this.isPreviewMode) {
         this.handlePreviewToggle(); // Switch back to editor
       }
+    }
+  }
+
+  /**
+   * Update validator button visibility based on current language
+   */
+  updateValidatorVisibility() {
+    const validateBtn = document.getElementById('validate-btn');
+    if (!validateBtn) return;
+
+    // Show validator for data/markup languages
+    const validatorLanguages = ['json', 'yaml', 'html', 'xml', 'css'];
+    const canValidate = validatorLanguages.includes(this.currentLanguage);
+
+    if (canValidate) {
+      validateBtn.style.display = 'inline-flex';
+    } else {
+      validateBtn.style.display = 'none';
+    }
+  }
+
+  /**
+   * Handle validate button click - validates syntax without executing
+   */
+  async handleValidate() {
+    if (this.isExecuting) {
+      this.toast.show('Already executing...', 'warning');
+      return;
+    }
+
+    try {
+      this.isExecuting = true;
+      const code = this.editor.getValue();
+
+      this.outputPanel.clear();
+      this.outputPanel.addLine('==================================================', 'info');
+      this.outputPanel.addLine(`Validating ${this.currentLanguage.toUpperCase()}...`, 'info');
+      this.outputPanel.addLine('==================================================', 'info');
+
+      // Execute the runtime (which does validation for these languages)
+      const startTime = performance.now();
+      const result = await this.runtimeManager.execute(code);
+      const endTime = performance.now();
+
+      // Display results
+      if (result.success) {
+        this.outputPanel.addLine(result.output, 'success');
+        this.toast.success(`✓ Valid ${this.currentLanguage.toUpperCase()}!`);
+      } else {
+        this.outputPanel.addLine(result.output, 'error');
+        this.toast.error(`✗ Invalid ${this.currentLanguage.toUpperCase()}`);
+      }
+
+      // Show execution time
+      const executionTime = (endTime - startTime).toFixed(2);
+      this.updateExecutionStats(executionTime);
+
+      this.isExecuting = false;
+    } catch (error) {
+      console.error('Validation error:', error);
+      this.outputPanel.addLine(`Validation Error: ${error.message}`, 'error');
+      this.toast.error(`Validation failed: ${error.message}`);
+      this.isExecuting = false;
     }
   }
 
@@ -973,6 +1050,10 @@ class DrLeeIDE {
       // Update status
       this.setStatus(`Switched to ${language}`);
 
+      // Update preview/validator button visibility based on new language
+      this.updatePreviewVisibility();
+      this.updateValidatorVisibility();
+
       this.hideLoading();
     } catch (error) {
       console.error('Failed to switch language:', error);
@@ -1015,6 +1096,10 @@ class DrLeeIDE {
     this.editor.setValue(fileData.content);
     this.editor.setLanguage(this.currentLanguage);
     this.hasUnsavedChanges = false;
+
+    // Update preview/validator button visibility
+    this.updatePreviewVisibility();
+    this.updateValidatorVisibility();
   }
 
   /**
@@ -1049,8 +1134,9 @@ class DrLeeIDE {
 
     this.hasUnsavedChanges = file.unsaved || false;
 
-    // Update preview button visibility
+    // Update preview/validator button visibility
     this.updatePreviewVisibility();
+    this.updateValidatorVisibility();
   }
 
   /**

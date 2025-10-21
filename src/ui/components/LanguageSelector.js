@@ -274,11 +274,10 @@ export default class LanguageSelector {
     };
 
     // Define popular languages
-    const popularIds = ['javascript', 'typescript', 'python', 'lua', 'r', 'php', 'sql', 'sqlite', 'postgresql', 'duckdb'];
+    const popularIds = ['javascript', 'typescript', 'coffeescript', 'markdown', 'json', 'html', 'css', 'yaml', 'python', 'lua', 'r', 'php', 'perl', 'sql', 'sqlite', 'postgresql', 'duckdb', 'mysql', 'p5js', 'blockly'];
 
     for (const lang of this.languages) {
-      // Skip unavailable languages
-      if (!lang.available) continue;
+      // Don't skip unavailable languages - show them with "Coming Soon" badge
 
       // Popular category
       if (popularIds.includes(lang.id)) {
@@ -348,6 +347,12 @@ export default class LanguageSelector {
       { id: 'coffeescript', name: 'CoffeeScript', icon: '☕', available: true, category: 'language', tier: 'free', description: 'CoffeeScript 2.x - elegant JavaScript' },
       { id: 'markdown', name: 'Markdown', icon: '📝', available: true, category: 'language', tier: 'free', description: 'Markdown rendering and analysis' },
       { id: 'json', name: 'JSON', icon: '📋', available: true, category: 'language', tier: 'free', description: 'JSON validation and formatting' },
+      { id: 'css', name: 'CSS', icon: '🎨', available: true, category: 'language', tier: 'free', description: 'CSS3 validation and analysis' },
+      { id: 'html', name: 'HTML', icon: '🌐', available: true, category: 'language', tier: 'free', description: 'HTML5 validation and formatting' },
+      { id: 'xml', name: 'XML', icon: '📄', available: true, category: 'language', tier: 'free', description: 'XML validation and formatting' },
+      { id: 'yaml', name: 'YAML', icon: '📝', available: true, category: 'language', tier: 'free', description: 'YAML validation and formatting' },
+      { id: 'shell', name: 'Shell', icon: '💻', available: true, category: 'language', tier: 'free', description: 'Bash shell script simulator' },
+      { id: 'assemblyscript', name: 'AssemblyScript', icon: '⚙️', available: false, category: 'language', tier: 'free', description: 'TypeScript-to-WASM compiler (requires build config)' },
       { id: 'python', name: 'Python', icon: '🐍', available: true, category: 'language', tier: 'free', description: 'Python 3.11+ via Pyodide' },
       { id: 'lua', name: 'Lua', icon: '🌙', available: true, category: 'language', tier: 'free', description: 'Lua 5.4 via Wasmoon' },
       { id: 'r', name: 'R', icon: '📊', available: true, category: 'language', tier: 'pro', description: 'R 4.3 for statistics and data science' },
@@ -359,7 +364,7 @@ export default class LanguageSelector {
       { id: 'php', name: 'PHP', icon: '🐘', available: true, category: 'language', tier: 'pro', description: 'PHP 8.2 for web development' },
       { id: 'postgresql', name: 'PostgreSQL', icon: '🐘', available: true, category: 'database', tier: 'pro', description: 'PostgreSQL 16 via PGLite' },
       { id: 'scheme', name: 'Scheme', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Scheme R7RS via BiwaScheme' },
-      { id: 'perl', name: 'Perl', icon: '🐪', available: false, category: 'language', tier: 'pro', description: 'Perl 5 scripting' },
+      { id: 'perl', name: 'Perl', icon: '🐪', available: false, category: 'language', tier: 'pro', description: 'Perl 5 scripting (coming soon)' },
 
       // === COMPILED LANGUAGES ===
       { id: 'c', name: 'C', icon: '⚙️', available: false, category: 'language', tier: 'enterprise', description: 'C via Emscripten/clang-wasm' },
@@ -388,12 +393,12 @@ export default class LanguageSelector {
 
       // === LISP FAMILY ===
       { id: 'commonlisp', name: 'Common Lisp', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Common Lisp ANSI CL via JSCL' },
-      { id: 'racket', name: 'Racket', icon: '🎾', available: false, category: 'language', tier: 'pro', description: 'Racket Scheme' },
+      { id: 'racket', name: 'Racket', icon: '🎾', available: true, category: 'language', tier: 'pro', description: 'Racket-compatible Scheme' },
 
       // === EDUCATION/SCRIPTING ===
       { id: 'basic', name: 'BASIC', icon: '📺', available: true, category: 'language', tier: 'free', description: 'Classic BASIC programming' },
-      { id: 'pascal', name: 'Pascal', icon: '🎯', available: false, category: 'language', tier: 'pro', description: 'Pascal via pas2js' },
-      { id: 'tcl', name: 'Tcl', icon: '🔧', available: false, category: 'language', tier: 'pro', description: 'Tool Command Language' },
+      { id: 'pascal', name: 'Pascal', icon: '🎯', available: true, category: 'language', tier: 'free', description: 'Pascal educational interpreter' },
+      { id: 'tcl', name: 'Tcl', icon: '🔧', available: true, category: 'language', tier: 'pro', description: 'Tool Command Language' },
 
       // === MATH & SCIENCE ===
       { id: 'julia', name: 'Julia', icon: '🔬', available: false, category: 'language', tier: 'enterprise', description: 'Julia scientific computing (experimental)' },
@@ -413,6 +418,7 @@ export default class LanguageSelector {
       { id: 'wat', name: 'WebAssembly Text', icon: '⚙️', available: false, category: 'language', tier: 'pro', description: 'WebAssembly Text Format' },
 
       // === ADDITIONAL DATABASES ===
+      { id: 'mysql', name: 'MySQL', icon: '🐬', available: true, category: 'database', tier: 'free', description: 'MySQL-compatible via SQL.js' },
       { id: 'mongodb', name: 'MongoDB', icon: '🍃', available: false, category: 'database', tier: 'enterprise', description: 'MongoDB document database' },
       { id: 'redis', name: 'Redis', icon: '🔴', available: false, category: 'database', tier: 'pro', description: 'Redis in-memory database' },
 
@@ -420,12 +426,12 @@ export default class LanguageSelector {
       { id: 'jupyterlite', name: 'JupyterLite', icon: '📓', available: true, category: 'notebook', tier: 'pro', description: 'Jupyter notebooks in browser' },
       { id: 'starboard', name: 'Starboard Notebook', icon: '⭐', available: false, category: 'notebook', tier: 'free', description: 'Interactive notebook environment' },
       { id: 'observable', name: 'Observable', icon: '👁️', available: false, category: 'notebook', tier: 'pro', description: 'Reactive notebooks for JavaScript' },
-      { id: 'blockly', name: 'Blockly', icon: '🧩', available: false, category: 'notebook', tier: 'free', description: 'Visual block programming' },
+      { id: 'blockly', name: 'Blockly', icon: '🧩', available: true, category: 'notebook', tier: 'free', description: 'Visual block programming with Blockly' },
       { id: 'codemirror', name: 'CodeMirror', icon: '📝', available: false, category: 'notebook', tier: 'free', description: 'Advanced code editor' },
       { id: 'sagemath', name: 'SageMath Cell', icon: '🧮', available: false, category: 'notebook', tier: 'pro', description: 'Mathematics computation' },
       { id: 'swagger', name: 'Swagger Editor', icon: '📋', available: false, category: 'notebook', tier: 'pro', description: 'API design and documentation' },
       { id: 'sqlpad', name: 'SQL Pad', icon: '💾', available: false, category: 'notebook', tier: 'pro', description: 'SQL query editor' },
-      { id: 'p5js', name: 'p5.js Editor', icon: '🎨', available: false, category: 'notebook', tier: 'free', description: 'Creative coding with p5.js' },
+      { id: 'p5js', name: 'p5.js', icon: '🎨', available: true, category: 'language', tier: 'free', description: 'Creative coding with p5.js' },
       { id: 'scratch', name: 'Scratch', icon: '🐱', available: false, category: 'notebook', tier: 'free', description: 'Visual programming for education' },
       { id: 'polynote', name: 'Polynote', icon: '📊', available: false, category: 'notebook', tier: 'enterprise', description: 'Polyglot notebook environment' },
     ];

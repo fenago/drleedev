@@ -14,12 +14,12 @@
   <!-- Content Security Policy -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://jupyterlite.github.io;
+    script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://jupyterlite.github.io https://huggingface.co https://*.huggingface.co;
     style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://jupyterlite.github.io;
     worker-src 'self' blob:;
     font-src 'self' data: https://cdn.jsdelivr.net;
     img-src 'self' data: blob:;
-    connect-src 'self' https://cdn.jsdelivr.net https://cors.isomorphic-git.org https://github.com https://api.github.com;
+    connect-src 'self' https://cdn.jsdelivr.net https://cors.isomorphic-git.org https://github.com https://api.github.com https://huggingface.co https://*.huggingface.co;
     frame-src https://jupyterlite.github.io;
   ">
 

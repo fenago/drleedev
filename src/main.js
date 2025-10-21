@@ -16,6 +16,9 @@ import FileExplorer from './ui/components/FileExplorer.js';
 import Toast from './ui/components/Toast.js';
 import SettingsPanel from './ui/components/SettingsPanel.js';
 import GitCloneDialog from './ui/components/GitCloneDialog.js';
+import AIAssistantRuntime from './runtimes/ai/AIAssistantRuntime.js';
+import AIContextManager from './ai/AIContextManager.js';
+import AIChatPanel from './ui/components/AIChatPanel.js';
 
 /**
  * DrLeeIDE - Main Application Class
@@ -34,6 +37,9 @@ class DrLeeIDE {
     this.toast = null;
     this.settingsPanel = null;
     this.gitCloneDialog = null;
+    this.aiRuntime = null;
+    this.aiContextManager = null;
+    this.aiChatPanel = null;
 
     this.currentLanguage = 'markdown';
     this.currentFile = null; // Currently open file
@@ -68,6 +74,7 @@ class DrLeeIDE {
       this.initTabBar();
       this.initLanguageSelector();
       await this.initFileExplorer();
+      this.initAIAssistant(); // Initialize AI assistant
       this.initTheme();
       this.initEventListeners();
 
@@ -291,6 +298,40 @@ class DrLeeIDE {
 
     // Add Git clone button to toolbar
     this.createGitCloneButton();
+  }
+
+  /**
+   * Initialize AI Assistant
+   */
+  initAIAssistant() {
+    try {
+      // Create AI container (will be added to body by AIChatPanel)
+      const aiContainer = document.createElement('div');
+      aiContainer.id = 'ai-chat-container';
+      document.body.appendChild(aiContainer);
+
+      // Initialize AI Runtime
+      this.aiRuntime = new AIAssistantRuntime();
+
+      // Initialize AI Context Manager
+      this.aiContextManager = new AIContextManager();
+
+      // Initialize AI Chat Panel
+      this.aiChatPanel = new AIChatPanel(
+        aiContainer,
+        this.aiRuntime,
+        this.aiContextManager
+      );
+      this.aiChatPanel.init();
+
+      console.log('AI Assistant initialized successfully');
+
+      // Show info toast
+      this.toast.info('AI Assistant available! Click the 🤖 button to start.', 5000);
+    } catch (error) {
+      console.error('Failed to initialize AI Assistant:', error);
+      this.toast.error(`AI Assistant initialization failed: ${error.message}`);
+    }
   }
 
   /**
@@ -1098,6 +1139,14 @@ class DrLeeIDE {
       this.updatePreviewVisibility();
       this.updateValidatorVisibility();
 
+      // Update AI context
+      if (this.aiContextManager) {
+        this.aiContextManager.setCurrentLanguage(language);
+        if (this.currentFile) {
+          this.aiContextManager.setCurrentFile(this.currentFile);
+        }
+      }
+
       this.hideLoading();
     } catch (error) {
       console.error('Failed to switch language:', error);
@@ -1283,6 +1332,15 @@ class DrLeeIDE {
       const fileData = this.openFiles.get(activeTabId);
       if (fileData) {
         fileData.content = code;
+      }
+    }
+
+    // Update AI context
+    if (this.aiContextManager) {
+      this.aiContextManager.setCurrentCode(code);
+      this.aiContextManager.setCurrentLanguage(this.currentLanguage);
+      if (this.currentFile) {
+        this.aiContextManager.setCurrentFile(this.currentFile);
       }
     }
 

@@ -2666,6 +2666,28 @@ input[type="range"]::-moz-range-thumb {
   padding: 0;
 }
 
+/* Message images */
+.ai-message-images {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xs);
+}
+
+.ai-message-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ai-message-image:hover {
+  transform: scale(1.05);
+}
+
 /* Typing indicator */
 .ai-typing {
   animation: none;
@@ -2707,10 +2729,83 @@ input[type="range"]::-moz-range-thumb {
 /* AI Input Container */
 .ai-chat-input-container {
   display: flex;
+  flex-direction: column;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background-color: var(--bg-primary);
   border-top: 1px solid var(--border-color);
+}
+
+.ai-input-wrapper {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: flex-end;
+}
+
+.ai-image-upload-btn {
+  padding: var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 18px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ai-image-upload-btn:hover {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--text-accent);
+}
+
+.ai-image-preview-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  padding: var(--spacing-sm);
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.ai-image-preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.ai-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ai-image-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background-color 0.2s ease;
+}
+
+.ai-image-remove:hover {
+  background-color: rgba(220, 38, 38, 0.9);
 }
 
 .ai-chat-input {
@@ -2743,6 +2838,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: 13px;
   font-weight: 600;
   transition: background-color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .ai-send-btn:hover:not(:disabled) {

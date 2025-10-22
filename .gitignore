@@ -44,3 +44,11 @@ test-results/
 playwright-report/
 playwright/.cache/
 public/jupyterlite
+
+# AI Models (too large, hosted on CDN)
+models/
+*.litertlm
+*.task
+
+# Wrangler
+.wrangler/

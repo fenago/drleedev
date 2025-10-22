@@ -142,18 +142,6 @@ export const LANGUAGE_REGISTRY = {
     description: 'Scheme (Lisp dialect) via BiwaScheme',
   },
 
-  perl: {
-    id: 'perl',
-    displayName: 'Perl',
-    category: 'language',
-    tier: 'pro',
-    status: 'planned',
-    lazy: true,
-    size: '8 MB',
-    icon: '🐪',
-    description: 'Perl 5 scripting',
-  },
-
   // === COMPILED LANGUAGES ===
 
   c: {
@@ -266,18 +254,6 @@ export const LANGUAGE_REGISTRY = {
     description: 'Scala via Scala.js',
   },
 
-  clojure: {
-    id: 'clojure',
-    displayName: 'Clojure',
-    category: 'language',
-    tier: 'pro',
-    status: 'planned',
-    lazy: true,
-    size: '10 MB',
-    icon: '🔵',
-    description: 'Clojure via ClojureScript',
-  },
-
   // === .NET LANGUAGES ===
 
   csharp: {
@@ -380,18 +356,6 @@ export const LANGUAGE_REGISTRY = {
     description: 'Common Lisp via JSCL',
   },
 
-  racket: {
-    id: 'racket',
-    displayName: 'Racket',
-    category: 'language',
-    tier: 'pro',
-    status: 'planned',
-    lazy: true,
-    size: '12 MB',
-    icon: '🎾',
-    description: 'Racket Scheme',
-  },
-
   // === EDUCATION/SCRIPTING ===
 
   basic: {
@@ -404,30 +368,6 @@ export const LANGUAGE_REGISTRY = {
     size: '1 MB',
     icon: '📺',
     description: 'BASIC programming',
-  },
-
-  pascal: {
-    id: 'pascal',
-    displayName: 'Pascal',
-    category: 'language',
-    tier: 'pro',
-    status: 'planned',
-    lazy: true,
-    size: '8 MB',
-    icon: '🎯',
-    description: 'Pascal via pas2js',
-  },
-
-  tcl: {
-    id: 'tcl',
-    displayName: 'Tcl',
-    category: 'language',
-    tier: 'pro',
-    status: 'planned',
-    lazy: true,
-    size: '5 MB',
-    icon: '🔧',
-    description: 'Tool Command Language',
   },
 
   // === MATH & SCIENCE ===

@@ -274,7 +274,7 @@ export default class LanguageSelector {
     };
 
     // Define popular languages
-    const popularIds = ['javascript', 'typescript', 'coffeescript', 'markdown', 'json', 'html', 'css', 'yaml', 'python', 'lua', 'r', 'php', 'perl', 'sql', 'sqlite', 'postgresql', 'duckdb', 'mysql', 'p5js', 'blockly'];
+    const popularIds = ['javascript', 'typescript', 'coffeescript', 'markdown', 'json', 'html', 'css', 'yaml', 'python', 'lua', 'r', 'php', 'sql', 'sqlite', 'postgresql', 'duckdb', 'mysql', 'p5js', 'blockly'];
 
     for (const lang of this.languages) {
       // Don't skip unavailable languages - show them with "Coming Soon" badge
@@ -292,15 +292,15 @@ export default class LanguageSelector {
         categories['Notebooks & IDE Integrations'].push(lang);
       }
       // Scripting languages
-      else if (['ruby', 'perl', 'tcl'].includes(lang.id)) {
+      else if (['ruby'].includes(lang.id)) {
         categories['Scripting Languages'].push(lang);
       }
       // Functional & Logic
-      else if (['scheme', 'commonlisp', 'racket', 'haskell', 'ocaml', 'elm', 'erlang', 'elixir', 'prolog', 'clojure'].includes(lang.id)) {
+      else if (['scheme', 'commonlisp', 'haskell', 'ocaml', 'elm', 'erlang', 'elixir', 'prolog'].includes(lang.id)) {
         categories['Functional & Logic Languages'].push(lang);
       }
       // Educational
-      else if (['basic', 'pascal', 'scratch', 'blockly'].includes(lang.id)) {
+      else if (['basic', 'scratch', 'blockly'].includes(lang.id)) {
         categories['Educational Languages'].push(lang);
       }
       // Compiled
@@ -364,7 +364,6 @@ export default class LanguageSelector {
       { id: 'php', name: 'PHP', icon: '🐘', available: true, category: 'language', tier: 'pro', description: 'PHP 8.2 for web development' },
       { id: 'postgresql', name: 'PostgreSQL', icon: '🐘', available: true, category: 'database', tier: 'pro', description: 'PostgreSQL 16 via PGLite' },
       { id: 'scheme', name: 'Scheme', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Scheme R7RS via BiwaScheme' },
-      { id: 'perl', name: 'Perl', icon: '🐪', available: false, category: 'language', tier: 'pro', description: 'Perl 5 scripting (coming soon)' },
 
       // === COMPILED LANGUAGES ===
       { id: 'c', name: 'C', icon: '⚙️', available: false, category: 'language', tier: 'enterprise', description: 'C via Emscripten/clang-wasm' },
@@ -378,7 +377,6 @@ export default class LanguageSelector {
       { id: 'java', name: 'Java', icon: '☕', available: false, category: 'language', tier: 'enterprise', description: 'Java via CheerpJ/TeaVM' },
       { id: 'kotlin', name: 'Kotlin', icon: '🟣', available: false, category: 'language', tier: 'enterprise', description: 'Kotlin via Kotlin/JS' },
       { id: 'scala', name: 'Scala', icon: '🔴', available: false, category: 'language', tier: 'enterprise', description: 'Scala via Scala.js' },
-      { id: 'clojure', name: 'Clojure', icon: '🔵', available: true, category: 'language', tier: 'pro', description: 'Clojure via ClojureScript REPL' },
 
       // === .NET LANGUAGES ===
       { id: 'csharp', name: 'C#', icon: '💚', available: false, category: 'language', tier: 'enterprise', description: 'C# via Blazor WASM' },
@@ -393,12 +391,9 @@ export default class LanguageSelector {
 
       // === LISP FAMILY ===
       { id: 'commonlisp', name: 'Common Lisp', icon: '🎓', available: true, category: 'language', tier: 'pro', description: 'Common Lisp ANSI CL via JSCL' },
-      { id: 'racket', name: 'Racket', icon: '🎾', available: true, category: 'language', tier: 'pro', description: 'Racket-compatible Scheme' },
 
       // === EDUCATION/SCRIPTING ===
       { id: 'basic', name: 'BASIC', icon: '📺', available: true, category: 'language', tier: 'free', description: 'Classic BASIC programming' },
-      { id: 'pascal', name: 'Pascal', icon: '🎯', available: true, category: 'language', tier: 'free', description: 'Pascal educational interpreter' },
-      { id: 'tcl', name: 'Tcl', icon: '🔧', available: true, category: 'language', tier: 'pro', description: 'Tool Command Language' },
 
       // === MATH & SCIENCE ===
       { id: 'julia', name: 'Julia', icon: '🔬', available: false, category: 'language', tier: 'enterprise', description: 'Julia scientific computing (experimental)' },

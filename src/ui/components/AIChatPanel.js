@@ -14,6 +14,7 @@ export default class AIChatPanel {
     this.messages = [];
     this.isVisible = false;
     this.isMinimized = false;
+    this.uploadedImages = []; // Store uploaded image URLs for multimodal prompts
 
     // UI elements
     this.panel = null;
@@ -29,6 +30,9 @@ export default class AIChatPanel {
     this.toggleButton = null;
     this.settingsButton = null;
     this.settingsDialog = null;
+    this.imageUploadButton = null;
+    this.imageInput = null;
+    this.imagePreviewContainer = null;
   }
 
   /**
@@ -76,14 +80,21 @@ export default class AIChatPanel {
       <div class="ai-chat-messages"></div>
 
       <div class="ai-chat-input-container">
-        <textarea
-          class="ai-chat-input"
-          placeholder="Ask AI anything... (Shift+Enter to send)"
-          rows="2"
-        ></textarea>
-        <button class="ai-send-btn" disabled title="Load model first">
-          <span>Send</span>
-        </button>
+        <div class="ai-image-preview-container" style="display: none;"></div>
+        <div class="ai-input-wrapper">
+          <button class="ai-image-upload-btn" title="Upload images (multimodal models only)">
+            📷
+          </button>
+          <input type="file" class="ai-image-input" accept="image/*" multiple style="display: none;">
+          <textarea
+            class="ai-chat-input"
+            placeholder="Ask AI anything... (Shift+Enter to send)"
+            rows="2"
+          ></textarea>
+          <button class="ai-send-btn" disabled title="Load model first">
+            <span>Send</span>
+          </button>
+        </div>
       </div>
 
       <div class="ai-chat-actions">
@@ -119,6 +130,9 @@ export default class AIChatPanel {
     this.settingsButton = this.panel.querySelector('.ai-settings-btn');
     this.minimizeButton = this.panel.querySelector('.ai-minimize-btn');
     this.closeButton = this.panel.querySelector('.ai-close-btn');
+    this.imageUploadButton = this.panel.querySelector('.ai-image-upload-btn');
+    this.imageInput = this.panel.querySelector('.ai-image-input');
+    this.imagePreviewContainer = this.panel.querySelector('.ai-image-preview-container');
 
     // Create settings dialog
     this.createSettingsDialog();
@@ -401,6 +415,20 @@ export default class AIChatPanel {
       });
     });
 
+    // Image upload button
+    this.imageUploadButton.addEventListener('click', () => {
+      // Check if multimodal is supported
+      const status = this.aiRuntime.getStatus();
+      if (!status.supportsMultimodal) {
+        this.addSystemMessage('⚠️ Please load a Gemma 3 multimodal model (marked with 🖼️) to use image upload.');
+        return;
+      }
+      this.imageInput.click();
+    });
+
+    // Image input change
+    this.imageInput.addEventListener('change', (e) => this.handleImageUpload(e));
+
     // Auto-load model on first interaction
     let modelLoaded = false;
     const loadModelOnce = async () => {
@@ -480,11 +508,19 @@ export default class AIChatPanel {
       return;
     }
 
-    // Clear input
-    this.input.value = '';
+    // Save uploaded images before clearing
+    const images = [...this.uploadedImages];
 
-    // Add user message to chat
-    this.addUserMessage(userMessage);
+    // Clear input and images
+    this.input.value = '';
+    this.clearImages();
+
+    // Add user message to chat (with images if any)
+    if (images.length > 0) {
+      this.addUserMessage(userMessage, images);
+    } else {
+      this.addUserMessage(userMessage);
+    }
 
     // Show typing indicator
     const typingId = this.addTypingIndicator();
@@ -504,13 +540,15 @@ export default class AIChatPanel {
       // Get model parameters from settings
       const options = this.settings.getModelParameters();
 
+      // Pass images to runtime (for multimodal models)
       await this.aiRuntime.chatStream(
         messages,
         (chunk) => {
           responseText += chunk;
           this.updateAssistantMessage(messageId, responseText);
         },
-        options
+        options,
+        images // Pass images array for multimodal generation
       );
 
       // Store message in history
@@ -610,10 +648,21 @@ export default class AIChatPanel {
   /**
    * Add user message
    */
-  addUserMessage(text) {
+  addUserMessage(text, images = []) {
     const messageEl = document.createElement('div');
     messageEl.className = 'ai-message ai-message-user';
+
+    let imagesHtml = '';
+    if (images && images.length > 0) {
+      imagesHtml = '<div class="ai-message-images">';
+      images.forEach(imageUrl => {
+        imagesHtml += `<img src="${imageUrl}" alt="User upload" class="ai-message-image">`;
+      });
+      imagesHtml += '</div>';
+    }
+
     messageEl.innerHTML = `
+      ${imagesHtml}
       <div class="ai-message-content">${this.escapeHtml(text)}</div>
     `;
     this.messagesContainer.appendChild(messageEl);
@@ -943,5 +992,104 @@ export default class AIChatPanel {
     this.settings.reset();
     this.applySettings();
     this.addSystemMessage('✅ Settings reset to defaults.');
+  }
+
+  /**
+   * Handle image upload
+   */
+  async handleImageUpload(event) {
+    const files = event.target.files;
+
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    // Check limit (max 5 images for MediaPipe)
+    if (this.uploadedImages.length + files.length > 5) {
+      this.addSystemMessage('⚠️ Maximum 5 images allowed per message.');
+      return;
+    }
+
+    for (const file of files) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.addSystemMessage(`⚠️ ${file.name} is not an image file.`);
+        continue;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.addSystemMessage(`⚠️ ${file.name} is too large (max 5MB).`);
+        continue;
+      }
+
+      try {
+        // Read image as data URL
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageUrl = e.target.result;
+          this.uploadedImages.push(imageUrl);
+          this.showImagePreview(imageUrl, this.uploadedImages.length - 1);
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error reading image:', error);
+        this.addSystemMessage(`❌ Failed to read ${file.name}`);
+      }
+    }
+
+    // Clear file input
+    this.imageInput.value = '';
+  }
+
+  /**
+   * Show image preview
+   */
+  showImagePreview(imageUrl, index) {
+    // Show preview container
+    this.imagePreviewContainer.style.display = 'flex';
+
+    // Create preview element
+    const preview = document.createElement('div');
+    preview.className = 'ai-image-preview';
+    preview.innerHTML = `
+      <img src="${imageUrl}" alt="Upload ${index + 1}">
+      <button class="ai-image-remove" data-index="${index}" title="Remove image">×</button>
+    `;
+
+    // Add remove listener
+    const removeBtn = preview.querySelector('.ai-image-remove');
+    removeBtn.addEventListener('click', () => this.removeImage(index));
+
+    this.imagePreviewContainer.appendChild(preview);
+  }
+
+  /**
+   * Remove uploaded image
+   */
+  removeImage(index) {
+    // Remove from array
+    this.uploadedImages.splice(index, 1);
+
+    // Clear and rebuild previews
+    this.imagePreviewContainer.innerHTML = '';
+
+    if (this.uploadedImages.length === 0) {
+      this.imagePreviewContainer.style.display = 'none';
+    } else {
+      // Rebuild all previews with updated indices
+      this.uploadedImages.forEach((url, i) => {
+        this.showImagePreview(url, i);
+      });
+    }
+  }
+
+  /**
+   * Clear all uploaded images
+   */
+  clearImages() {
+    this.uploadedImages = [];
+    this.imagePreviewContainer.innerHTML = '';
+    this.imagePreviewContainer.style.display = 'none';
   }
 }

@@ -16,7 +16,7 @@ import FileExplorer from './ui/components/FileExplorer.js';
 import Toast from './ui/components/Toast.js';
 import SettingsPanel from './ui/components/SettingsPanel.js';
 import GitCloneDialog from './ui/components/GitCloneDialog.js';
-import AIAssistantRuntime from './runtimes/ai/AIAssistantRuntime.js';
+import AIRuntimeManager from './runtimes/ai/AIRuntimeManager.js';
 import AIContextManager from './ai/AIContextManager.js';
 import AIChatPanel from './ui/components/AIChatPanel.js';
 
@@ -310,8 +310,8 @@ class DrLeeIDE {
       aiContainer.id = 'ai-chat-container';
       document.body.appendChild(aiContainer);
 
-      // Initialize AI Runtime
-      this.aiRuntime = new AIAssistantRuntime();
+      // Initialize AI Runtime Manager (supports both WebLLM and MediaPipe)
+      this.aiRuntime = new AIRuntimeManager();
 
       // Initialize AI Context Manager
       this.aiContextManager = new AIContextManager();
@@ -1002,13 +1002,8 @@ class DrLeeIDE {
       mysql: 'sql',
       scheme: 'scm',
       commonlisp: 'lisp',
-      racket: 'rkt',
-      clojure: 'clj',
       prolog: 'pl',
       basic: 'bas',
-      pascal: 'pas',
-      tcl: 'tcl',
-      perl: 'pl',
       blockly: 'xml',
       p5js: 'js',
       jupyterlite: 'ipynb',

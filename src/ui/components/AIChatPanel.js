@@ -281,7 +281,7 @@ export default class AIChatPanel {
       // Add CDN Models group (FIRST - most prominent)
       if (cdnModels.length > 0) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '⭐ CDN Models (Recommended - Fast Loading)';
+        optgroup.label = '⭐ CDN Models (Recommended)';
         cdnModels.forEach(model => {
           const option = document.createElement('option');
           option.value = model.id;
@@ -291,48 +291,22 @@ export default class AIChatPanel {
         this.modelSelector.appendChild(optgroup);
       }
 
-      // Add separator
-      const separator = document.createElement('optgroup');
-      separator.label = '─────────────────────────────────';
-      separator.disabled = true;
-      this.modelSelector.appendChild(separator);
+      // Only show a curated list of popular WebLLM models (not all 30+)
+      const popularModelIds = [
+        'Llama-3.2-3B-Instruct-q4f16_1-MLC', // Llama 3.2 3B
+        'Llama-3.2-1B-Instruct-q4f16_1-MLC', // Llama 3.2 1B
+        'Qwen2.5-3B-Instruct-q4f16_1-MLC', // Qwen 2.5 3B
+        'Phi-3.5-mini-instruct-q4f16_1-MLC', // Phi 3.5 mini
+        'gemma-2-2b-it-q4f16_1-MLC', // Gemma 2 2B
+      ];
 
-      // Group WebLLM models by category
-      const small = webllmModels.filter(m => m.category === 'small');
-      const medium = webllmModels.filter(m => m.category === 'medium');
-      const large = webllmModels.filter(m => m.category === 'large');
+      const popularModels = webllmModels.filter(m => popularModelIds.includes(m.id));
 
-      // Add WebLLM small models group
-      if (small.length > 0) {
+      // Add popular WebLLM models
+      if (popularModels.length > 0) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '⚡ WebLLM Small Models (<2GB RAM)';
-        small.forEach(model => {
-          const option = document.createElement('option');
-          option.value = model.id;
-          option.textContent = `${model.name} ${model.size}`;
-          optgroup.appendChild(option);
-        });
-        this.modelSelector.appendChild(optgroup);
-      }
-
-      // Add WebLLM medium models group
-      if (medium.length > 0) {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = '🚀 WebLLM Medium Models (2-4GB RAM)';
-        medium.forEach(model => {
-          const option = document.createElement('option');
-          option.value = model.id;
-          option.textContent = `${model.name} ${model.size}`;
-          optgroup.appendChild(option);
-        });
-        this.modelSelector.appendChild(optgroup);
-      }
-
-      // Add WebLLM large models group
-      if (large.length > 0) {
-        const optgroup = document.createElement('optgroup');
-        optgroup.label = '🔥 WebLLM Large Models (4GB+ RAM)';
-        large.forEach(model => {
+        optgroup.label = '🌐 Popular WebLLM Models';
+        popularModels.forEach(model => {
           const option = document.createElement('option');
           option.value = model.id;
           option.textContent = `${model.name} ${model.size}`;
@@ -354,7 +328,7 @@ export default class AIChatPanel {
         console.log(`Default model set to: ${defaultModel}`);
       }
 
-      console.log(`Loaded ${models.length} AI models into selector (${cdnModels.length} CDN, ${webllmModels.length} WebLLM)`);
+      console.log(`Loaded ${cdnModels.length + popularModels.length} AI models into selector (${cdnModels.length} CDN, ${popularModels.length} popular WebLLM)`);
     } catch (error) {
       console.error('Failed to populate model selector:', error);
       this.modelSelector.innerHTML = '<option value="">Error loading models</option>';

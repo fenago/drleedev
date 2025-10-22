@@ -18,27 +18,35 @@ export default class AIRuntimeManager {
   }
 
   /**
-   * Get all available models (MediaPipe only - CDN hosted)
-   * WebLLM disabled for production (requires external downloads)
-   * @returns {Promise<Array>} List of CDN-hosted models
+   * Get all available models from both runtimes
+   * @returns {Promise<Array>} Combined list of models
    */
   async getAvailableModels() {
     try {
-      // Get MediaPipe models (CDN-hosted only)
+      // Get WebLLM models
+      const webllmModels = await this.webLLMRuntime.getAvailableModels();
+
+      // Get MediaPipe models
       const mediapipeModels = this.mediaPipeRuntime.getAvailableModels();
 
-      // Add metadata to distinguish runtime
+      // Add metadata to distinguish between runtimes
+      const webllmWithMeta = webllmModels.map(model => ({
+        ...model,
+        runtime: 'webllm',
+        multimodal: false,
+      }));
+
       const mediapipeWithMeta = mediapipeModels.map(model => ({
         ...model,
         runtime: 'mediapipe',
         multimodal: true,
-        // Keep the category from the model definition
+        category: 'small', // All Gemma 3 models are optimized
         // Add emoji to indicate multimodal support
         name: `🖼️ ${model.name}`,
       }));
 
-      // Return only CDN-hosted models
-      return mediapipeWithMeta;
+      // Combine and return
+      return [...mediapipeWithMeta, ...webllmWithMeta];
     } catch (error) {
       console.error('Error getting available models:', error);
       return [];

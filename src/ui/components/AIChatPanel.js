@@ -274,15 +274,38 @@ export default class AIChatPanel {
       // Clear loading option
       this.modelSelector.innerHTML = '';
 
-      // Group models by category
-      const small = models.filter(m => m.category === 'small');
-      const medium = models.filter(m => m.category === 'medium');
-      const large = models.filter(m => m.category === 'large');
+      // Separate CDN models (MediaPipe) from WebLLM models
+      const cdnModels = models.filter(m => m.runtime === 'mediapipe');
+      const webllmModels = models.filter(m => m.runtime === 'webllm');
 
-      // Add small models group
+      // Add CDN Models group (FIRST - most prominent)
+      if (cdnModels.length > 0) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = '⭐ CDN Models (Recommended - Fast Loading)';
+        cdnModels.forEach(model => {
+          const option = document.createElement('option');
+          option.value = model.id;
+          option.textContent = `${model.name} - ${model.size}`;
+          optgroup.appendChild(option);
+        });
+        this.modelSelector.appendChild(optgroup);
+      }
+
+      // Add separator
+      const separator = document.createElement('optgroup');
+      separator.label = '─────────────────────────────────';
+      separator.disabled = true;
+      this.modelSelector.appendChild(separator);
+
+      // Group WebLLM models by category
+      const small = webllmModels.filter(m => m.category === 'small');
+      const medium = webllmModels.filter(m => m.category === 'medium');
+      const large = webllmModels.filter(m => m.category === 'large');
+
+      // Add WebLLM small models group
       if (small.length > 0) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '⚡ Small Models (Fast, <2GB RAM)';
+        optgroup.label = '⚡ WebLLM Small Models (<2GB RAM)';
         small.forEach(model => {
           const option = document.createElement('option');
           option.value = model.id;
@@ -292,10 +315,10 @@ export default class AIChatPanel {
         this.modelSelector.appendChild(optgroup);
       }
 
-      // Add medium models group
+      // Add WebLLM medium models group
       if (medium.length > 0) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '🚀 Medium Models (Balanced, 2-4GB RAM)';
+        optgroup.label = '🚀 WebLLM Medium Models (2-4GB RAM)';
         medium.forEach(model => {
           const option = document.createElement('option');
           option.value = model.id;
@@ -305,10 +328,10 @@ export default class AIChatPanel {
         this.modelSelector.appendChild(optgroup);
       }
 
-      // Add large models group
+      // Add WebLLM large models group
       if (large.length > 0) {
         const optgroup = document.createElement('optgroup');
-        optgroup.label = '🔥 Large Models (Best Quality, 4GB+ RAM)';
+        optgroup.label = '🔥 WebLLM Large Models (4GB+ RAM)';
         large.forEach(model => {
           const option = document.createElement('option');
           option.value = model.id;
@@ -318,32 +341,20 @@ export default class AIChatPanel {
         this.modelSelector.appendChild(optgroup);
       }
 
-      // Select Gemma model by default if available, otherwise first small model
-      let defaultModel = models[0]?.id;
+      // Set Gemma 3 270M Q8 as default (the small CDN model)
+      let defaultModel = 'gemma-3-270m-q8';
 
-      // Try to find a Gemma model
-      const gemmaModel = models.find(m =>
-        m.id.toLowerCase().includes('gemma') &&
-        m.category === 'small'
-      );
-
-      if (gemmaModel) {
-        defaultModel = gemmaModel.id;
-        console.log(`Default model set to: ${gemmaModel.name}`);
-      } else {
-        // Try any Gemma model (even if large)
-        const anyGemma = models.find(m => m.id.toLowerCase().includes('gemma'));
-        if (anyGemma) {
-          defaultModel = anyGemma.id;
-          console.log(`Default model set to: ${anyGemma.name}`);
-        }
+      // Fallback: if not found, try any CDN model, then any model
+      if (!models.find(m => m.id === defaultModel)) {
+        defaultModel = cdnModels[0]?.id || models[0]?.id;
       }
 
       if (defaultModel) {
         this.modelSelector.value = defaultModel;
+        console.log(`Default model set to: ${defaultModel}`);
       }
 
-      console.log(`Loaded ${models.length} AI models into selector (default: ${defaultModel})`);
+      console.log(`Loaded ${models.length} AI models into selector (${cdnModels.length} CDN, ${webllmModels.length} WebLLM)`);
     } catch (error) {
       console.error('Failed to populate model selector:', error);
       this.modelSelector.innerHTML = '<option value="">Error loading models</option>';

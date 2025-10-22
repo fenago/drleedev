@@ -40,7 +40,7 @@ export default class AIRuntimeManager {
         ...model,
         runtime: 'mediapipe',
         multimodal: true,
-        category: 'small', // All Gemma 3 models are optimized
+        // Preserve category from model definition (small/large)
         // Add emoji to indicate multimodal support
         name: `🖼️ ${model.name}`,
       }));

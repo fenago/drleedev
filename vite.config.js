@@ -20,6 +20,7 @@ export default defineConfig({
     sourcemap: true,
     // Monaco Editor is large, so we split it out
     rollupOptions: {
+      external: ['xlsx-style'], // Don't bundle xlsx-style (CommonJS package)
       output: {
         manualChunks: {
           monaco: ['monaco-editor'],
@@ -34,6 +35,7 @@ export default defineConfig({
       '@electric-sql/pglite',
       'sql.js',
       'wasmoon',
+      'xlsx-style', // Exclude xlsx-style from pre-bundling
     ],
     esbuildOptions: {
       define: {

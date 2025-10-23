@@ -18,18 +18,13 @@ import SchemeRuntime from './languages/SchemeRuntime.js';
 import CommonLispRuntime from './languages/CommonLispRuntime.js';
 import BasicRuntime from './languages/BasicRuntime.js';
 import PrologRuntime from './languages/PrologRuntime.js';
-import ClojureRuntime from './languages/ClojureRuntime.js';
 import SQLiteRuntime from './databases/SQLiteRuntime.js';
 import DuckDBRuntime from './databases/DuckDBRuntime.js';
 import PostgreSQLRuntime from './databases/PostgreSQLRuntime.js';
 import MySQLRuntime from './databases/MySQLRuntime.js';
 import JupyterLiteRuntime from './notebooks/JupyterLiteRuntime.js';
-// import PerlRuntime from './languages/PerlRuntime.js'; // Disabled - no browser support
 import BlocklyRuntime from './languages/BlocklyRuntime.js';
 import P5Runtime from './languages/P5Runtime.js';
-import RacketRuntime from './languages/RacketRuntime.js';
-import PascalRuntime from './languages/PascalRuntime.js';
-import TclRuntime from './languages/TclRuntime.js';
 
 /**
  * RuntimeManager - Manages all programming language runtimes
@@ -188,18 +183,6 @@ export default class RuntimeManager {
         tier: 'pro',
         lazy: true, // Load on demand (400KB)
       },
-      clojure: {
-        class: ClojureRuntime,
-        displayName: 'Clojure',
-        tier: 'pro',
-        lazy: true, // Load on demand (100KB)
-      },
-      // perl: {  // Disabled - no browser implementation available
-      //   class: PerlRuntime,
-      //   displayName: 'Perl',
-      //   tier: 'pro',
-      //   lazy: true, // Load on demand (500KB)
-      // },
       blockly: {
         class: BlocklyRuntime,
         displayName: 'Blockly',
@@ -217,24 +200,6 @@ export default class RuntimeManager {
         displayName: 'MySQL',
         tier: 'free',
         lazy: true, // Load on demand (2MB)
-      },
-      racket: {
-        class: RacketRuntime,
-        displayName: 'Racket',
-        tier: 'pro',
-        lazy: true, // Load on demand (500KB)
-      },
-      pascal: {
-        class: PascalRuntime,
-        displayName: 'Pascal',
-        tier: 'free',
-        lazy: false, // Native implementation
-      },
-      tcl: {
-        class: TclRuntime,
-        displayName: 'Tcl',
-        tier: 'pro',
-        lazy: false, // Native implementation
       },
     };
   }
